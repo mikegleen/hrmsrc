@@ -8,10 +8,10 @@ import csv
 import os.path
 
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
-CSVDIR = os.path.join(HRMDIR,  'results')
-CSVPATH = os.path.join(CSVDIR, 'merged4.csv')
-HTMLDIR = os.path.join(HRMDIR,  'merged')
-HTMLPATH = os.path.join(HTMLDIR, 'merged2.html')
+CSVDIR = os.path.join(HRMDIR, 'results')
+CSVPATH = os.path.join(CSVDIR, 'final.csv')
+HTMLDIR = os.path.join(HRMDIR, 'data')
+HTMLPATH = os.path.join(HTMLDIR, 'final.html')
 
 
 soup = bs(open(HTMLPATH), 'html.parser')  # , 'html5lib')
@@ -26,10 +26,13 @@ for row in tr:
     r = [val.replace(u'\xA0', u' ') for val in r]  # nonbreaking space
     rows.append(r)
 
-print(len(rows), rows[2])
+# print(len(rows), rows[2])
 
 irows = iter(rows)
 n = 0
 for row in irows:
+    if n < 10:
+        print(row)
+    n += 1
     outcsv.writerow(row)
 

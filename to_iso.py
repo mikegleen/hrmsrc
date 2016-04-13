@@ -4,6 +4,9 @@ Convert the dates in the Heath Robinson cartoon transcriptions to ISO 8601
 format. This code depends upon knowing what the input file's Date field
 contains. If the input file is modified, run the program and for any records
 where the ISODate field is "N/A", update the strp_formats tuple as appropriate.
+
+Input: the CSV file produced by read_html.py.
+Output: an XLSX formatted spreadsheet.
 """
 
 import csv
@@ -13,21 +16,29 @@ import xlsxwriter
 
 
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
-CSVDIR = os.path.join(HRMDIR,  'results')
-CSVPATH = os.path.join(CSVDIR, 'merged4.csv')
-XLSXDIR = os.path.join(HRMDIR,  'results')
-XLSXPATH = os.path.join(XLSXDIR, 'merged4.xlsx')
+CSVDIR = os.path.join(HRMDIR, 'results')
+CSVPATH = os.path.join(CSVDIR, 'final.csv')
+XLSXDIR = os.path.join(HRMDIR, 'results')
+XLSXPATH = os.path.join(XLSXDIR, 'final.xlsx')
 
 # Define the date formats that we know will be in the data.
-#                1 Jan 18    1 Jan 1918  1.1.18
-strp_formats = ('%d %b %y', '%d %b %Y', '%d.%m.%y', '%d/%m/%y', '%d%b %y',
-                '%b %y')
+#
+strp_formats = ('%d %b %y',  # 1 Jan 18
+                '%d %b %Y',  # 1 Jan 1918
+                '%d.%m.%y',  # 1.1.18
+                '%d.%m.%Y',  # 1.1.1918
+                '%d/%m/%y',  # 1/1/18
+                '%d%b %y',   # 1Jan 18
+                '%b %y',     # Jan 18
+                '%b %Y'      # Jan 1918
+                )
 
 
 def fixdate(rawdate):
     rtn = 'N/A'
     for fmt in strp_formats:
         try:
+            # print(rawdate, fmt)
             fixed = dt.strptime(rawdate, fmt)
             if fixed.year > 1999:
                 fixed = dt(fixed.year - 100, fixed.month, fixed.day)
@@ -48,6 +59,13 @@ fieldnames += ['ISODate']
 # Open the workbook and put the heading line to the worksheet
 workbook = xlsxwriter.Workbook(XLSXPATH)
 worksheet = workbook.add_worksheet()
+worksheet.set_column(0, 0, 86.66)
+worksheet.set_column(1, 2, 14.04)
+worksheet.set_column(3, 3, 8.05)
+
+wformat = workbook.add_format()
+wformat.set_text_wrap()
+
 colnum = 0
 for name in fieldnames:
     worksheet.write(0, colnum, name)
