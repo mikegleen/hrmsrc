@@ -1,8 +1,9 @@
 """
+Read each of the HTML files created by trans2html.py, extract the table data,
 
 """
 
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup as Bs
 import collections
 import csv
 import os.path
@@ -14,7 +15,7 @@ HTMLDIR = os.path.join(HRMDIR, 'data')
 HTMLPATH = os.path.join(HTMLDIR, 'final.html')
 
 
-soup = bs(open(HTMLPATH), 'html.parser')  # , 'html5lib')
+soup = Bs(open(HTMLPATH), 'html.parser')  # , 'html5lib')
 outcsv = csv.writer(open(CSVPATH, 'w', newline=''))
 
 rows = []
