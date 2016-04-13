@@ -1,16 +1,23 @@
-from bs4 import BeautifulSoup as bs
+"""
+Convert the HTML file produced by LibreOffice converted from the DOC formatted
+file containing the cartoon publications data.
+
+Output: A CSV file with columns delimited by "|".
+"""
+
+from bs4 import BeautifulSoup as Bs
 import collections
 import csv
 import os.path
 
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
-CSVDIR = os.path.join(HRMDIR,  'results')
-CSVPATH = os.path.join(CSVDIR, 'merged4.csv')
-HTMLDIR = os.path.join(HRMDIR,  'merged')
-HTMLPATH = os.path.join(HTMLDIR, 'merged2.html')
+CSVDIR = os.path.join(HRMDIR, 'results')
+CSVPATH = os.path.join(CSVDIR, 'final.csv')
+HTMLDIR = os.path.join(HRMDIR, 'data')
+HTMLPATH = os.path.join(HTMLDIR, 'final.html')
 
 
-soup = bs(open(HTMLPATH), 'html.parser')  # , 'html5lib')
+soup = Bs(open(HTMLPATH), 'html.parser')  # , 'html5lib')
 outcsv = csv.writer(open(CSVPATH, 'w', newline=''), delimiter='|')
 
 rows = []
@@ -28,4 +35,7 @@ for row in tr:
 irows = iter(rows)
 n = 0
 for row in irows:
+    if n < 10:
+        print(row)
+    n += 1
     outcsv.writerow(row)
