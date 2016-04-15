@@ -13,7 +13,7 @@ import sys
 CMD = ('/Users/mlg/bin/soffice --headless --convert-to html {docfile} '
        '--outdir {htmldir}')
 DOCDIR = os.path.join('data', 'doc')
-HTMLPATH = os.path.join('results', 'html')
+HTMLDIR = os.path.join('results', 'html')
 
 
 def handle_subdir(dirname):
@@ -23,7 +23,7 @@ def handle_subdir(dirname):
         print('    ', name)
         if name.lower().endswith('.doc'):
             docfile = os.path.join(DOCDIR, dirname, name)
-            htmldir = os.path.join(HTMLPATH, dirname)
+            htmldir = os.path.join(HTMLDIR, dirname)
             cmd = CMD.format(docfile=docfile, htmldir=htmldir)
             print('        ', cmd)
             subprocess.check_call(cmd.split())
