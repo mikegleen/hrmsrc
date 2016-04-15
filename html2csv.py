@@ -11,9 +11,10 @@ import os.path
 import sys
 
 CSVDIR = os.path.join('results', 'csv')
-CSVPATH = os.path.join(CSVDIR, 'final.csv')
+CSVFILENAME = 'merged.csv'
 HTMLDIR = os.path.join('results', 'html')
 TRACE_ON = 1
+HEADING = ['Title', 'Periodical', 'Date', 'Page', 'File']
 
 
 def trace(template, *args):
@@ -43,7 +44,7 @@ def handle_one_row(row):
 def handle_one_file(outcsv, htmlpath, name):
     global rowcount
     filepath = os.path.join(htmlpath, name)
-    trace('        filepath: {}', filepath)
+    trace('        input: {}', filepath)
     htmlfile = open(filepath)
     soup = Bs(htmlfile, 'html.parser')  # , 'html5lib')
     table = soup.find('table')
@@ -71,21 +72,27 @@ def handle_subdir(outcsv, dirname):
             trace('        skipping {}', name)
 
 
+def opencsvwriter(filename):
+    global csvpath
+    csvpath = os.path.join(CSVDIR, filename)
+    csvfile = open(csvpath, 'w', newline='')
+    outcsv = csv.writer(csvfile, delimiter='|')
+    outcsv.writerow(HEADING)
+    trace('Output: {}', csvpath)
+    return outcsv
+
+
 def main():
     global rowcount
-    csvfile = open(CSVPATH, 'w', newline='')
-    outcsv = csv.writer(csvfile, delimiter='|')
+    outcsv = opencsvwriter(CSVFILENAME)
     for name in sorted(os.listdir(HTMLDIR)):
         if os.path.isdir(os.path.join(HTMLDIR, name)):
             handle_subdir(outcsv, name)
-    print('\nEnd html2csv. {} rows written to {}'.
-          format(rowcount, os.path.abspath(CSVPATH)))
 
 
 def one_file():
     csvname = sys.argv[1][:-5] + '.csv'
-    csvfile = open(os.path.join(CSVDIR, csvname), 'w', newline='')
-    outcsv = csv.writer(csvfile, delimiter='|')
+    outcsv = opencsvwriter(csvname)
     handle_one_file(outcsv, HTMLDIR, sys.argv[1])
 
 
@@ -97,3 +104,5 @@ if __name__ == '__main__':
         main()
     else:
         one_file()
+    print('\nEnd html2csv. {} rows written to {}'.
+          format(rowcount, os.path.abspath(csvpath)))
