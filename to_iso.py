@@ -17,9 +17,9 @@ import xlsxwriter
 
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
 CSVDIR = os.path.join(HRMDIR, 'results')
-CSVPATH = os.path.join(CSVDIR, 'final.csv')
+CSVPATH = os.path.join(CSVDIR, 'merged.csv')
 XLSXDIR = os.path.join(HRMDIR, 'results')
-XLSXPATH = os.path.join(XLSXDIR, 'final.xlsx')
+XLSXPATH = os.path.join(XLSXDIR, 'merged.xlsx')
 
 # Define the date formats that we know will be in the data.
 #
