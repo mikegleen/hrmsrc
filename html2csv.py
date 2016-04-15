@@ -41,6 +41,7 @@ def handle_one_row(row):
 
 
 def handle_one_file(outcsv, htmlpath, name):
+    global rowcount
     filepath = os.path.join(htmlpath, name)
     trace('        filepath: {}', filepath)
     htmlfile = open(filepath)
@@ -54,6 +55,7 @@ def handle_one_file(outcsv, htmlpath, name):
         if len(outrow) > 3 and outrow[0] and outrow[1] != 'Periodical':
             outrow.append(name[:-5])  # all but trailing ".html"
             outcsv.writerow(outrow)
+            rowcount += 1
     htmlfile.close()
 
 
@@ -61,7 +63,7 @@ def handle_subdir(outcsv, dirname):
     # handle transcribexxx directory under results/html
     html_sub_path = os.path.join(HTMLDIR, dirname)
     trace('{}', html_sub_path)
-    for name in os.listdir(html_sub_path):
+    for name in sorted(os.listdir(html_sub_path)):
         trace('    {}', name)
         if name.lower().endswith('.html'):
             handle_one_file(outcsv, html_sub_path, name)
@@ -70,10 +72,14 @@ def handle_subdir(outcsv, dirname):
 
 
 def main():
-    outcsv = csv.writer(open(CSVPATH, 'w', newline=''), delimiter='|')
-    for name in os.listdir(HTMLDIR):
+    global rowcount
+    csvfile = open(CSVPATH, 'w', newline='')
+    outcsv = csv.writer(csvfile, delimiter='|')
+    for name in sorted(os.listdir(HTMLDIR)):
         if os.path.isdir(os.path.join(HTMLDIR, name)):
             handle_subdir(outcsv, name)
+    print('\nEnd html2csv. {} rows written to {}'.
+          format(rowcount, os.path.abspath(CSVPATH)))
 
 
 def one_file():
@@ -84,9 +90,10 @@ def one_file():
 
 
 if __name__ == '__main__':
+    rowcount = 0
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         main()
     else:
         one_file()

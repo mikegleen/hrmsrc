@@ -3,6 +3,8 @@ Convert the HTML file produced by LibreOffice converted from the DOC formatted
 file containing the cartoon publications data.
 
 Output: A CSV file with columns delimited by "|".
+
+Note: This script processes one file. For multiple files see html2csv.py.
 """
 
 from bs4 import BeautifulSoup as Bs
