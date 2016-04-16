@@ -42,22 +42,49 @@ def opencsvwriter(filename):
     return outcsv
 
 
-def main():
-    merged_dict = {}
+def build_dict(name, path):
+    seq = 0
+    reader = opencsvreader(path)
+    csvdict = {}
+    for row in reader:
+        seq += 1
+        nrow = Rowtuple(seq, *row)
+        key = (nrow.Periodical, nrow.Date, nrow.Page)
+        if key in csvdict:
+            old = csvdict[key]
+            print('------------\nDuplicate: {} seq {}, {}'.
+                  format(name, old.Seq, seq))
+            print(old)
+            print('----')
+            print(nrow)
+        else:
+            csvdict[key] = nrow
+    trace('Merged: {} rows processed. Dict len: {}', seq, len(csvdict))
+    return csvdict
+
+
+def build_merged_dict():
     seq = 0
     mergedcsv = opencsvreader(MERGEDPATH)
+    merged = {}
     for row in mergedcsv:
         seq += 1
         nrow = Rowtuple(seq, *row)
         key = (nrow.Periodical, nrow.Date, nrow.Page)
-        if key in merged_dict:
-            old = merged_dict[key]
+        if key in merged:
+            old = merged[key]
             print('------------\nDuplicate: seq {}, {}'.format(old.Seq, seq))
             print(old)
             print('----')
             print(nrow)
         else:
-            merged_dict[key] = nrow
+            merged[key] = nrow
+    trace('Merged: {} rows processed. Dict len: {}', seq, len(merged))
+    return merged
+
+
+def main():
+    merged_dict = build_dict('merged', MERGEDPATH)
 if __name__ == '__main__':
     rowcount = 0
     if sys.version_info.major < 3:
