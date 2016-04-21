@@ -52,7 +52,6 @@ def opencsvwriter(filename):
     csvpath = os.path.join(CSVDIR, filename)
     csvfile = open(csvpath, 'w', newline='')
     outcsv = csv.writer(csvfile, delimiter='|')
-    outcsv.writerow(HEADING)
     trace('Output: {}', csvpath)
     return outcsv
 
