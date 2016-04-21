@@ -19,7 +19,7 @@ HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
 CSVDIR = os.path.join(HRMDIR, 'results', 'csv')
 CSVPATH = os.path.join(CSVDIR, 'updated.csv')
 XLSXDIR = os.path.join(HRMDIR, 'results')
-XLSXPATH = os.path.join(XLSXDIR, 'merged.xlsx')
+XLSXPATH = os.path.join(XLSXDIR, 'whr-cartoons.xlsx')
 
 # Define the date formats that we know will be in the data.
 #
