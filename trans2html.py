@@ -2,7 +2,10 @@
 Convert all of the .doc format files in the data/transcribe* directories to
 html.
 
-The run config sets the default dir to ~/Documents/hrm.
+In Pycharm, the run config sets the default dir to ~/Documents/hrm.
+
+WARNING: if soffice exits without printing anything, check that you don't have
+         libreOffice running in the background.
 """
 
 import os
@@ -21,10 +24,16 @@ def handle_subdir(dirname):
     # handle transcribexxx directory under data/doc
     print(dirname)
     for name in os.listdir(os.path.join(DOCDIR, dirname)):
-        print('    ', name)
+        # print('    ', name)
         if name.lower().endswith('.doc'):
             docfile = os.path.join(DOCDIR, dirname, name)
             htmldir = os.path.join(HTMLDIR, dirname)
+            htmlfile = name[:-4] + '.html'
+            htmlfile = os.path.join(htmldir, htmlfile)
+            if os.path.exists(htmlfile) and (os.path.getmtime(docfile) <
+                                             os.path.getmtime(htmlfile)):
+                print('        unmodified: ', name)
+                continue
             cmd = CMD.format(docfile=docfile, htmldir=htmldir)
             print('        ', cmd)
             subprocess.check_call(cmd.split())
