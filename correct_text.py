@@ -25,7 +25,7 @@ TRACE_ON = True
 RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
 CSVDIR = os.path.join(RESULTSDIR, 'csv')
 MERGEDPATH = os.path.join(CSVDIR, 'merged.csv')
-FINALPATH = os.path.join(CSVDIR, 'cartoons-11apr-nodup2.csv')
+FINALPATH = os.path.join(CSVDIR, 'cartoons-21apr-datesfixed.csv')
 HEADING = ['Title', 'Periodical', 'Date', 'Page', 'File']
 """
 The following two files will hold records whose Title field mismatch.
@@ -84,8 +84,7 @@ def compare_dicts(fromgoeff, original):
     mcorr_writer = opencsvwriter('mergedcorr.csv')
     fcorr_writer = opencsvwriter('finalcorr.csv')
     updated_writer = opencsvwriter('updated.csv')
-    print('orig')
-    print(len(original))
+
     for key, row in original.items():
         if key in corrected:
             if row.Title != corrected[key].Title:
@@ -98,13 +97,11 @@ def compare_dicts(fromgoeff, original):
             del corrected[key]
             updated_writer.writerow(row[1:])  # strip off leading row number
         else:
-            print('---- original not found:\n    ', row)
+            print('---- original not found:    ', row)
             errors += 1
-    print('corrected:', corrected)
-    print(len(corrected))
-    print(corrected.items())
+    print('{} not found in original. {} extras in original:'.format(errors, len(corrected)))
     for key, row in corrected.items():
-        print('---- extra in original:\n    ', row)
+        print('    extra: ', row)
         errors += 1
     return corrections, errors
 
