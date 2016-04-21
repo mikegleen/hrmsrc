@@ -16,8 +16,8 @@ import xlsxwriter
 
 
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
-CSVDIR = os.path.join(HRMDIR, 'results')
-CSVPATH = os.path.join(CSVDIR, 'merged.csv')
+CSVDIR = os.path.join(HRMDIR, 'results', 'csv')
+CSVPATH = os.path.join(CSVDIR, 'updated.csv')
 XLSXDIR = os.path.join(HRMDIR, 'results')
 XLSXPATH = os.path.join(XLSXDIR, 'merged.xlsx')
 
@@ -61,14 +61,15 @@ workbook = xlsxwriter.Workbook(XLSXPATH)
 worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 0, 86.66)
 worksheet.set_column(1, 2, 14.04)
-worksheet.set_column(3, 3, 8.05)
+worksheet.set_column(3, 5, 12.05)
 
 wformat = workbook.add_format()
 wformat.set_text_wrap()
+wformat.set_align("vjustify")
 
 colnum = 0
 for name in fieldnames:
-    worksheet.write(0, colnum, name)
+    worksheet.write(0, colnum, name, wformat)
     colnum += 1
 # print(CSVPATH)
 
@@ -79,7 +80,8 @@ for row in reader:
         row['ISODate'] = fixdate(row['Date'])
         colnum = 0
         for name in fieldnames:
-            worksheet.write(rownum, colnum, row[name])
+            worksheet.write(rownum, colnum, row[name], wformat)
             colnum += 1
         rownum += 1
 workbook.close()
+print('Created: {}'.format(XLSXPATH))
