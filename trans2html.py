@@ -9,6 +9,7 @@ import os
 import os.path
 import subprocess
 import sys
+import time
 
 CMD = ('/Users/mlg/bin/soffice --headless --convert-to html {docfile} '
        '--outdir {htmldir}')
@@ -32,11 +33,15 @@ def handle_subdir(dirname):
 
 
 def main():
+    starttime = time.time()
     for name in os.listdir(DOCDIR):
         if os.path.isdir(os.path.join(DOCDIR, name)):
             handle_subdir(name)
+    print('End correct_text. Elapsed time: {:.2f} seconds.'.format(
+        time.time() - starttime))
+    return 0
 
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    main()
+    sys.exit(main())

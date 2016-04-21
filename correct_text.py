@@ -1,20 +1,37 @@
 """
-Read the CSV file created by html2csv, and create a dictionary using the
-Publication, Date, and Page fields as the key, checking for duplicates.
+Read the CSV file merged from the individual page .doc files by
+the tool chain [.doc] --trans2html--> [.html] --html2csv --> [.csv]
+and create a dictionary using the Publication, Date, and Page fields as the
+key, checking for duplicates.
+
+Read the CSV file created from the corrected doc file and create a similar
+dictionary(called "final").
+
+Compare each entry in the merged .csv file with the corresponding entry in the
+corrected ("final") .csv file.  Display the mismatches of the 'Title' fields.
+There will be many of these as this is what has been corrected. Also check for
+any missing records (in either direction).
+
 """
 
 import collections
+import copy
 import csv
 import os.path
 import sys
+import time
 
 TRACE_ON = True
-HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
-CSVDIR = os.path.join(HRMDIR, 'results', 'csv')
+RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
+CSVDIR = os.path.join(RESULTSDIR, 'csv')
 MERGEDPATH = os.path.join(CSVDIR, 'merged.csv')
-FINALPATH = os.path.join(CSVDIR, 'final.csv')
-FIXEDPATH = os.path.join(CSVDIR, 'fixed.csv')
+FINALPATH = os.path.join(CSVDIR, 'cartoons-11apr-nodup2.csv')
 HEADING = ['Title', 'Periodical', 'Date', 'Page', 'File']
+"""
+The following two files will hold records whose Title field mismatch.
+"""
+
+
 Rowtuple = collections.namedtuple('Rowtuple', ('Seq',) + tuple(HEADING))
 
 
@@ -24,7 +41,6 @@ def trace(template, *args):
 
 
 def opencsvreader(filename):
-    global csvpath
     csvpath = os.path.join(CSVDIR, filename)
     csvfile = open(csvpath)
     incsv = csv.reader(csvfile, delimiter='|')
@@ -33,7 +49,6 @@ def opencsvreader(filename):
 
 
 def opencsvwriter(filename):
-    global csvpath
     csvpath = os.path.join(CSVDIR, filename)
     csvfile = open(csvpath, 'w', newline='')
     outcsv = csv.writer(csvfile, delimiter='|')
@@ -45,7 +60,7 @@ def opencsvwriter(filename):
 def build_dict(name, path):
     seq = 0
     reader = opencsvreader(path)
-    csvdict = {}
+    csvdict = collections.OrderedDict()
     for row in reader:
         seq += 1
         nrow = Rowtuple(seq, *row)
@@ -63,31 +78,50 @@ def build_dict(name, path):
     return csvdict
 
 
-def build_merged_dict():
-    seq = 0
-    mergedcsv = opencsvreader(MERGEDPATH)
-    merged = {}
-    for row in mergedcsv:
-        seq += 1
-        nrow = Rowtuple(seq, *row)
-        key = (nrow.Periodical, nrow.Date, nrow.Page)
-        if key in merged:
-            old = merged[key]
-            print('------------\nDuplicate: seq {}, {}'.format(old.Seq, seq))
-            print(old)
-            print('----')
-            print(nrow)
+def compare_dicts(fromgoeff, original):
+    corrections = 0
+    errors = 0
+    corrected = copy.copy(fromgoeff)
+    mcorr_writer = opencsvwriter('mergedcorr.csv')
+    fcorr_writer = opencsvwriter('finalcorr.csv')
+    updated_writer = opencsvwriter('updated.csv')
+    print('orig')
+    print(len(original))
+    for key, row in original.items():
+        if key in corrected:
+            if row.Title != corrected[key].Title:
+                # strip leading row # and trailing filename
+                mcorr_writer.writerow(row[1:-1])
+                fcorr_writer.writerow(fromgoeff[key][:-1])
+                row = list(row)
+                row[1] = fromgoeff[key][1]
+                corrections += 1
+            del corrected[key]
+            updated_writer.writerow(row[1:])  # strip off leading row number
         else:
-            merged[key] = nrow
-    trace('Merged: {} rows processed. Dict len: {}', seq, len(merged))
-    return merged
+            print('---- original not found:\n    ', row)
+            errors += 1
+    print('corrected:', corrected)
+    print(len(corrected))
+    print(corrected.items())
+    for key, row in corrected.items():
+        print('---- extra in original:\n    ', row)
+        errors += 1
+    return corrections, errors
 
 
 def main():
-    merged_dict = build_dict('merged', MERGEDPATH)
+    starttime = time.time()
+    merged = build_dict('merged', MERGEDPATH)
+    final = build_dict('final', FINALPATH)
+    corrections, errors = compare_dicts(final, merged)
+    print('End correct_text. Elapsed time: {:.2f} seconds.'.
+          format(time.time() - starttime))
+    print('{} corrections.'.format(corrections))
+    return 1 if errors else 0
+
 if __name__ == '__main__':
-    rowcount = 0
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    main()
+    sys.exit(main())
 

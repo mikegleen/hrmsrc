@@ -2,6 +2,14 @@
 Read each of the HTML files created by trans2html.py, extract the table data,
 and create a CSV file with a column appended containing the name of the source
 file (minus the trailing .html)
+
+If one file is specified on the command line, it is expected to be in
+results/html and the output will be in results/csv. This file must be specified
+with a trailing ".html".
+
+If nothing is specified on the command line, each subdirectory in results/html
+is processed in turn and corresponding subdirectories in results/csv are
+created.
 """
 
 from bs4 import BeautifulSoup as Bs
@@ -97,6 +105,7 @@ def one_file():
 
 
 if __name__ == '__main__':
+    csvpath = ''
     rowcount = 0
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
