@@ -12,6 +12,7 @@ Output: an XLSX formatted spreadsheet.
 import csv
 from datetime import datetime as dt
 import os.path
+import sys
 import xlsxwriter
 
 ISODATE = 'ISODate'
@@ -49,42 +50,49 @@ def fixdate(rawdate):
             pass
     return rtn
 
-# Get the original heading from the CSV file and add the column for the ISO
-# format date that we will append.
-csvfile = open(CSVPATH)
-firstline = csvfile.readline()
-csvfile.close()
-fieldnames = firstline.strip().split('|')
-fieldnames += ['ISODate']
 
-# Open the workbook and put the heading line to the worksheet
-workbook = xlsxwriter.Workbook(XLSXPATH)
-worksheet = workbook.add_worksheet()
-worksheet.set_column(0, 0, 86.66)
-worksheet.set_column(1, 2, 14.04)
-worksheet.set_column(3, 5, 12.05)
+def main():
+    # Get the original heading from the CSV file and add the column for the ISO
+    # format date that we will append.
+    csvfile = open(CSVPATH)
+    firstline = csvfile.readline()
+    csvfile.close()
+    fieldnames = firstline.strip().split('|')
+    fieldnames += ['ISODate']
 
-wformat = workbook.add_format()
-wformat.set_text_wrap()
-wformat.set_align("vjustify")
-dformat = workbook.add_format({'num_format': 'yyyy-mm-dd'})
+    # Open the workbook and put the heading line to the worksheet
+    workbook = xlsxwriter.Workbook(XLSXPATH)
+    worksheet = workbook.add_worksheet()
+    worksheet.set_column(0, 0, 86.66)
+    worksheet.set_column(1, 2, 14.04)
+    worksheet.set_column(3, 5, 12.05)
 
-colnum = 0
-for name in fieldnames:
-    worksheet.write(0, colnum, name, wformat)
-    colnum += 1
-# print(CSVPATH)
+    wformat = workbook.add_format()
+    wformat.set_text_wrap()
+    wformat.set_align("vjustify")
+    dformat = workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
-csvfile = open(CSVPATH, 'r')
-reader = csv.DictReader(csvfile, delimiter='|',)
-rownum = 1
-for row in reader:
-        row[ISODATE] = fixdate(row['Date'])
-        colnum = 0
-        for name in fieldnames:
-            fmt = dformat if name == ISODATE else wformat
-            worksheet.write(rownum, colnum, row[name], fmt)
-            colnum += 1
-        rownum += 1
-workbook.close()
-print('Created: {}'.format(XLSXPATH))
+    colnum = 0
+    for name in fieldnames:
+        worksheet.write(0, colnum, name, wformat)
+        colnum += 1
+    # print(CSVPATH)
+
+    csvfile = open(CSVPATH, 'r')
+    reader = csv.DictReader(csvfile, delimiter='|',)
+    rownum = 1
+    for row in reader:
+            row[ISODATE] = fixdate(row['Date'])
+            colnum = 0
+            for name in fieldnames:
+                fmt = dformat if name == ISODATE else wformat
+                worksheet.write(rownum, colnum, row[name], fmt)
+                colnum += 1
+            rownum += 1
+    workbook.close()
+    print('Created: {}'.format(XLSXPATH))
+
+if __name__ == '__main__':
+    if sys.version_info.major < 3:
+        raise ImportError('requires Python 3')
+    sys.exit(main())
