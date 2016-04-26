@@ -25,7 +25,7 @@ TRACE_ON = True
 RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
 CSVDIR = os.path.join(RESULTSDIR, 'csv')
 MERGEDPATH = os.path.join(CSVDIR, 'merged.csv')
-FINALPATH = os.path.join(CSVDIR, 'cartoons-21apr-datesfixed.csv')
+FINALPATH = 'cartoons-21apr-datesfixed.csv'
 HEADING = ['Title', 'Periodical', 'Date', 'Page', 'File']
 """
 The following two files will hold records whose Title field mismatch.
@@ -106,10 +106,10 @@ def compare_dicts(fromgoeff, original):
     return corrections, errors
 
 
-def main():
+def main(finaldoc):
     starttime = time.time()
     merged = build_dict('merged', MERGEDPATH)
-    final = build_dict('final', FINALPATH)
+    final = build_dict('final', finaldoc)
     corrections, errors = compare_dicts(final, merged)
     print('End correct_text. Elapsed time: {:.2f} seconds.'.
           format(time.time() - starttime))
@@ -119,5 +119,6 @@ def main():
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    sys.exit(main())
-
+    finalpath = FINALPATH if len(sys.argv) <= 1 else sys.argv[1]
+    finalpath = os.path.join(CSVDIR, finalpath)
+    sys.exit(main(finalpath))
