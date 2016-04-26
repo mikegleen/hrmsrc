@@ -14,7 +14,7 @@ from datetime import datetime as dt
 import os.path
 import xlsxwriter
 
-
+ISODATE = 'ISODate'
 HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
 CSVDIR = os.path.join(HRMDIR, 'results', 'csv')
 CSVPATH = os.path.join(CSVDIR, 'updated.csv')
@@ -43,6 +43,7 @@ def fixdate(rawdate):
             if fixed.year > 1999:
                 fixed = dt(fixed.year - 100, fixed.month, fixed.day)
             rtn = fixed.isoformat()[:10]
+            rtn = fixed  # .isoformat()[:10]
             break
         except ValueError:
             pass
@@ -66,6 +67,7 @@ worksheet.set_column(3, 5, 12.05)
 wformat = workbook.add_format()
 wformat.set_text_wrap()
 wformat.set_align("vjustify")
+dformat = workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
 colnum = 0
 for name in fieldnames:
@@ -77,10 +79,11 @@ csvfile = open(CSVPATH, 'r')
 reader = csv.DictReader(csvfile, delimiter='|',)
 rownum = 1
 for row in reader:
-        row['ISODate'] = fixdate(row['Date'])
+        row[ISODATE] = fixdate(row['Date'])
         colnum = 0
         for name in fieldnames:
-            worksheet.write(rownum, colnum, row[name], wformat)
+            fmt = dformat if name == ISODATE else wformat
+            worksheet.write(rownum, colnum, row[name], fmt)
             colnum += 1
         rownum += 1
 workbook.close()
