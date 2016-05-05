@@ -74,7 +74,7 @@ def main():
 
     colnum = 0
     for name in fieldnames:
-        worksheet.write(0, colnum, name, wformat)
+        worksheet.write_string(0, colnum, name, wformat)
         colnum += 1
     # print(CSVPATH)
 
@@ -85,8 +85,10 @@ def main():
             row[ISODATE] = fixdate(row['Date'])
             colnum = 0
             for name in fieldnames:
-                fmt = dformat if name == ISODATE else wformat
-                worksheet.write(rownum, colnum, row[name], fmt)
+                if name == ISODATE:
+                    worksheet.write(rownum, colnum, row[name], dformat)
+                else:
+                    worksheet.write_string(rownum, colnum, row[name])
                 colnum += 1
             rownum += 1
     workbook.close()
