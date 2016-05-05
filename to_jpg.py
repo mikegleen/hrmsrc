@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Convert a PDF file to JPEG.
+Convert a PDF file to JPEG using the OSX utility sips.
 
 The files must reside in directories with predefined names all within a
 predefined base directory (see below).
