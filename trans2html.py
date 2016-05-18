@@ -46,7 +46,7 @@ def main():
     for name in os.listdir(DOCDIR):
         if os.path.isdir(os.path.join(DOCDIR, name)):
             handle_subdir(name)
-    print('End correct_text. Elapsed time: {:.2f} seconds.'.format(
+    print('End trans2html. Elapsed time: {:.2f} seconds.'.format(
         time.time() - starttime))
     return 0
 
