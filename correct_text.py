@@ -1,19 +1,19 @@
 """
 Read the CSV file merged from the individual page .doc files by
-the tool chain [.doc] --trans2html--> [.html] --html2csv --> [.csv]
+the tool chain [*.doc] --trans2html--> [*.html] --html2csv --> [merged.csv]
 and create a dictionary using the Publication, Date, and Page fields as the
 key, checking for duplicates.
 
-Read the CSV file created from the corrected doc file and create a similar
-dictionary(called "final").
+Read the CSV file created from the manually edited doc file and create a
+similar dictionary(called "edited").
 
 Compare each entry in the merged .csv file with the corresponding entry in the
-corrected ("final") .csv file.  Display the mismatches of the 'Title' fields.
+edited .csv file.  Display the mismatches of the 'Title' fields.
 There will be many of these as this is what has been corrected. Also check for
 any missing records (in either direction).
 
 """
-
+import argparse
 import collections
 import copy
 import csv
@@ -23,13 +23,25 @@ import time
 
 TRACE_ON = True
 RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
+RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'pyprj', 'hrm', 'results')
+RESULTSDIR = os.path.join('.', 'results')
 CSVDIR = os.path.join(RESULTSDIR, 'csv')
+'''
+The following file was produced by html2csv.py (see the description above).
+'''
 MERGEDPATH = os.path.join(CSVDIR, 'merged.csv')
-FINALPATH = 'cartoons-21apr-datesfixed.csv'
+'''
+The following file is the corrected output.
+'''
+UPDATEDPATH = os.path.join(CSVDIR, 'updated.csv')
+"""
+The following two files will hold paired records whose Title field mismatch.
+These can be diff-ed to see what was changed.
+"""
+FINALCORRPATH = os.path.join(CSVDIR, 'finalcorr.csv')
+MERGEDCORRPATH = os.path.join(CSVDIR, 'mergedcorr.csv')
+
 HEADING = ['Title', 'Periodical', 'Date', 'Page', 'File']
-"""
-The following two files will hold records whose Title field mismatch.
-"""
 
 
 Rowtuple = collections.namedtuple('Rowtuple', ('Seq',) + tuple(HEADING))
@@ -40,16 +52,14 @@ def trace(template, *args):
         print(template.format(*args))
 
 
-def opencsvreader(filename):
-    csvpath = os.path.join(CSVDIR, filename)
+def opencsvreader(csvpath):
     csvfile = open(csvpath)
     incsv = csv.reader(csvfile, delimiter='|')
     trace('Input: {}', csvpath)
     return incsv
 
 
-def opencsvwriter(filename):
-    csvpath = os.path.join(CSVDIR, filename)
+def opencsvwriter(csvpath):
     csvfile = open(csvpath, 'w', newline='')
     outcsv = csv.writer(csvfile, delimiter='|')
     trace('Output: {}', csvpath)
@@ -81,9 +91,9 @@ def compare_dicts(fromgoeff, original):
     corrections = 0
     errors = 0
     corrected = copy.copy(fromgoeff)
-    mcorr_writer = opencsvwriter('mergedcorr.csv')
-    fcorr_writer = opencsvwriter('finalcorr.csv')
-    updated_writer = opencsvwriter('updated.csv')
+    mcorr_writer = opencsvwriter(MERGEDCORRPATH)
+    fcorr_writer = opencsvwriter(FINALCORRPATH)
+    updated_writer = opencsvwriter(UPDATEDPATH)
 
     for key, row in original.items():
         if key in corrected:
@@ -99,18 +109,31 @@ def compare_dicts(fromgoeff, original):
         else:
             print('---- original not found:    ', row)
             errors += 1
-    print('{} not found in original. {} extras in original:'.format(errors, len(corrected)))
+    print('{} not found in original. {} extras in original:'.
+          format(errors, len(corrected)))
     for key, row in corrected.items():
         print('    extra: ', row)
         errors += 1
     return corrections, errors
 
 
-def main(finaldoc):
+def get_args():
+    parser = argparse.ArgumentParser(description='''
+    Apply the manually edited texts to the records created from the
+    individual CSV files obtained from the one-per-page DOC files.''')
+    parser.add_argument('-e', '--edited', help='''This file contains the
+    merged original records except some were manually updated by the
+    proofreader.  The file named here must be in directory {}'''.
+                        format(CSVDIR))
+    args = parser.parse_args()
+    return args
+
+
+def main(editedpath):
     starttime = time.time()
     merged = build_dict('merged', MERGEDPATH)
-    final = build_dict('final', finaldoc)
-    corrections, errors = compare_dicts(final, merged)
+    edited = build_dict('edited', editedpath)
+    corrections, errors = compare_dicts(edited, merged)
     print('End correct_text. Elapsed time: {:.2f} seconds.'.
           format(time.time() - starttime))
     print('{} corrections.'.format(corrections))
@@ -119,6 +142,6 @@ def main(finaldoc):
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    finalpath = FINALPATH if len(sys.argv) <= 1 else sys.argv[1]
-    finalpath = os.path.join(CSVDIR, finalpath)
-    sys.exit(main(finalpath))
+    _args = get_args()
+    _editedpath = os.path.join(CSVDIR, _args.edited)
+    sys.exit(main(_editedpath))
