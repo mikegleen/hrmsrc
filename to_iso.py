@@ -7,6 +7,10 @@ where the ISODate field is "N/A", update the strp_formats tuple as appropriate.
 
 Input: the CSV file produced by read_html.py.
 Output: an XLSX formatted spreadsheet.
+Command line arg: the name of the file to process. The input file must be
+<arg>.csv in the results/csv directory and the output file will be <arg>.xlsx
+in the results/xlsx directory.
+
 """
 
 import csv
@@ -16,11 +20,11 @@ import sys
 import xlsxwriter
 
 ISODATE = 'ISODate'
-HRMDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm')
+HRMDIR = os.path.join('/', 'Users', 'mlg', 'pyprj', 'hrm')
 CSVDIR = os.path.join(HRMDIR, 'results', 'csv')
-CSVPATH = os.path.join(CSVDIR, 'updated.csv')
-XLSXDIR = os.path.join(HRMDIR, 'results')
-XLSXPATH = os.path.join(XLSXDIR, 'whr-cartoons.xlsx')
+CSVPATH_TEMPLATE = os.path.join(CSVDIR, '{}.csv')
+XLSXDIR = os.path.join(HRMDIR, 'results', 'xlsx')
+XLSXPATH_TEMPLATE = os.path.join(XLSXDIR, '{}.xlsx')
 
 # Define the date formats that we know will be in the data.
 #
@@ -54,14 +58,14 @@ def fixdate(rawdate):
 def main():
     # Get the original heading from the CSV file and add the column for the ISO
     # format date that we will append.
-    csvfile = open(CSVPATH)
+    csvfile = open(csvpath)
     firstline = csvfile.readline()
     csvfile.close()
     fieldnames = firstline.strip().split('|')
     fieldnames += ['ISODate']
 
     # Open the workbook and put the heading line to the worksheet
-    workbook = xlsxwriter.Workbook(XLSXPATH)
+    workbook = xlsxwriter.Workbook(xlsxpath)
     worksheet = workbook.add_worksheet()
     worksheet.set_column(0, 0, 86.66)
     worksheet.set_column(1, 2, 14.04)
@@ -78,7 +82,7 @@ def main():
         colnum += 1
     # print(CSVPATH)
 
-    csvfile = open(CSVPATH, 'r')
+    csvfile = open(csvpath, 'r')
     reader = csv.DictReader(csvfile, delimiter='|',)
     rownum = 1
     for row in reader:
@@ -92,9 +96,11 @@ def main():
                 colnum += 1
             rownum += 1
     workbook.close()
-    print('Created: {}'.format(XLSXPATH))
+    print('Created: {}'.format(xlsxpath))
 
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
+    csvpath = CSVPATH_TEMPLATE.format(sys.argv[1])
+    xlsxpath = XLSXPATH_TEMPLATE.format(sys.argv[1])
     sys.exit(main())
