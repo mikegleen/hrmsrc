@@ -1,11 +1,15 @@
 """
+Input:  merged.csv (hard coded)
+        file in arg[1]
+Output: updated.csv (hard coded)
+
 Read the CSV file merged from the individual page .doc files by
 the tool chain [*.doc] --trans2html--> [*.html] --html2csv --> [merged.csv]
 and create a dictionary using the Publication, Date, and Page fields as the
 key, checking for duplicates.
 
-Read the CSV file created from the manually edited doc file and create a
-similar dictionary(called "edited").
+Read the CSV file (arg[1]) created from the manually edited doc file and create
+a similar dictionary (called "edited").
 
 Compare each entry in the merged .csv file with the corresponding entry in the
 edited .csv file.  Display the mismatches of the 'Title' fields.

@@ -2,6 +2,9 @@
 Convert all of the .doc format files in the data/transcribe* directories to
 html.
 
+Requires libreOffice to be installed and a batch file created containing:
+    /Applications/LibreOffice.app/Contents/MacOS/soffice "$@"
+
 In Pycharm, the run config sets the default dir to ~/Documents/hrm.
 
 WARNING: if soffice exits without printing anything, check that you don't have
