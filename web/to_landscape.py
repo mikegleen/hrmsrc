@@ -12,7 +12,6 @@ import os.path
 from PIL import Image
 import sys
 
-BIAS = 1.25
 BACKGROUND = (0xF2, 0xF4, 0xF6)
 
 
@@ -24,7 +23,7 @@ def main(args):
     portrait_image = Image.open(args.infile)
     width, height = portrait_image.size
 
-    new_width = int(height * 2.**.5 * BIAS)
+    new_width = int(height * 2.**.5 * args.bias)
     if new_width <= width:
         print('Image is already wide enough.')
         portrait_image.save(target)
@@ -39,16 +38,23 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser(description='''
     Create a montage of a portrait format image and a plain landscape
-    background so that it won't be cropped by the LiberateIT CMS.
+    background so that it won't be cropped by the LiberateIT CMS. The height
+    is multiplied by √2 and the bias to give the new width.
     ''')
     parser.add_argument('infile', help='''Portrait format input file.''')
+    parser.add_argument('-b', '--bias', help='''
+        The bias is an arbitrary multiplier to give a large enough width to
+        avoid cropping. The default value is 1.25
+        ''', type=int, default=1.25)
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
-    output landscape file. If omitted, the default is "results/landscape".
-    ''', default=os.path.join('results', 'landscape'))
+        output landscape file. If omitted, the default is "results/landscape".
+        ''', default=os.path.join('results', 'landscape'))
     args = parser.parse_args()
     return args
 
 
 if __name__ == '__main__':
+    if sys.version_info.major < 3:
+        raise ImportError('requires Python 3')
     _args = get_args()
     main(_args)
