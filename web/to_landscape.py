@@ -16,8 +16,8 @@ BACKGROUND = (0xF2, 0xF4, 0xF6)
 
 
 def main(args):
-    basename = os.path.basename(args.infile)
-    front, extension = os.path.splitext(basename)
+    basename = os.path.basename(args.infile)  # 'a/b/xyz.jpg' -> 'xyz.jpg'
+    front, extension = os.path.splitext(basename)  # 'xyz.jpg' -> 'xyz', '.jpg'
     landscape_name = front + '_landscape' + extension
     target = os.path.join(args.outdir, landscape_name)
     portrait_image = Image.open(args.infile)
