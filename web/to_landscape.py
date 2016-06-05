@@ -44,8 +44,8 @@ def get_args():
     parser.add_argument('infile', help='''Portrait format input file.''')
     parser.add_argument('-b', '--bias', help='''
         The bias is an arbitrary multiplier to give a large enough width to
-        avoid cropping. The default value is 1.25
-        ''', type=int, default=1.25)
+        avoid cropping. The default value is 1.25.
+        ''', type=float, default=1.25)
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
         output landscape file. If omitted, the default is "results/landscape".
         ''', default=os.path.join('results', 'landscape'))
