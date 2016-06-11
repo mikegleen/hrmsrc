@@ -5,6 +5,8 @@ format. This code depends upon knowing what the input file's Date field
 contains. If the input file is modified, run the program and for any records
 where the ISODate field is "N/A", update the strp_formats tuple as appropriate.
 
+If the year in the date is later than 1999, subtract 100 from the year.
+
 Input: the CSV file produced by read_html.py.
 Output: an XLSX formatted spreadsheet.
 Command line arg: the name of the file to process. The input file must be
