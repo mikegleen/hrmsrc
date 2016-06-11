@@ -18,7 +18,7 @@ BACKGROUND = (0xF2, 0xF4, 0xF6)
 def main(args):
     basename = os.path.basename(args.infile)  # 'a/b/xyz.jpg' -> 'xyz.jpg'
     front, extension = os.path.splitext(basename)  # 'xyz.jpg' -> 'xyz', '.jpg'
-    landscape_name = front + '_landscape' + extension
+    landscape_name = front + '_landscape' + '.jpeg'  # extension
     target = os.path.join(args.outdir, landscape_name)
     portrait_image = Image.open(args.infile)
     width, height = portrait_image.size
@@ -33,6 +33,7 @@ def main(args):
     landscape_image = Image.new('RGBA', (new_width, height), BACKGROUND)
     landscape_image.paste(portrait_image, (x_origin, 0))
     landscape_image.save(target)
+    print('Created:', target)
 
 
 def get_args():
