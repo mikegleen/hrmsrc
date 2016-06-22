@@ -4,7 +4,7 @@ Create two thumbnail images:
     portrait: width 342, height 484
     landscape: width 1280, height 826
 
-The background color is hard-coded below.
+See get_args for details.
 
 """
 import argparse
@@ -16,9 +16,10 @@ import sys
 BACKGROUND = 'F2F4F6'
 PORTRAIT_WIDTH = 342
 PORTRAIT_HEIGHT = 484
-PORTRAIT_RATIO = float(PORTRAIT_WIDTH) / float(PORTRAIT_HEIGHT)
 LANDSCAPE_WIDTH = 1280
 LANDSCAPE_HEIGHT = 826
+
+PORTRAIT_RATIO = float(PORTRAIT_WIDTH) / float(PORTRAIT_HEIGHT)
 LANDSCAPE_RATIO = float(LANDSCAPE_WIDTH) / float(LANDSCAPE_HEIGHT)
 
 
@@ -83,18 +84,18 @@ def pad_width(inimage, target_width, target_height):
     return target_image
 
 
-def main(args):
-    basename = os.path.basename(args.infile)  # 'a/b/xyz.jpg' -> 'xyz.jpg'
+def onefile(infile, outdir):
+    basename = os.path.basename(infile)  # 'a/b/xyz.jpg' -> 'xyz.jpg'
     front, extension = os.path.splitext(basename)  # 'xyz.jpg' -> 'xyz', '.jpg'
     portrait_thumb_name = front + '_portrait_thumb' + '.jpeg'
     landscape_thumb_name = front + '_landscape_thumb' + '.jpeg'
-    portrait_target = os.path.join(args.outdir, portrait_thumb_name)
-    landscape_target = os.path.join(args.outdir, landscape_thumb_name)
-    input_image = Image.open(args.infile)
+    portrait_target = os.path.join(outdir, portrait_thumb_name)
+    landscape_target = os.path.join(outdir, landscape_thumb_name)
+    input_image = Image.open(infile)
     width, height = input_image.size
     wh_ratio = width / height
     trace(2, "Input: {}\nSize (width, height) in pixels: {}, {}, "
-          "width/height = {:.3f}", args.infile, width, height, wh_ratio)
+          "width/height = {:.3f}", infile, width, height, wh_ratio)
     trace(2, "Begin building portrait image. Target w/h ratio: {:.3f}",
           PORTRAIT_RATIO)
     if wh_ratio > PORTRAIT_RATIO:
@@ -113,11 +114,23 @@ def main(args):
     landscape.save(landscape_target)
 
 
+def main(args):
+    if os.path.isdir(args.infile):
+        for filename in os.listdir(args.infile):
+            onefile(filename, args.infile)
+    else:
+        onefile(args.infile, args.outdir)
+
+
 def get_args():
     parser = argparse.ArgumentParser(description='''
     Create two thumbnail images:
     portrait: (width 342, height 484)
-    landscape: (width 1280, height 826)
+    landscape: (width 1280, height 826).
+
+    The thumbnail files are created with the same name as the original file
+    but with _thumb_portrait and _thumb_landscape appended before the
+    extension.
     ''')
     parser.add_argument('infile', help='''Original sized input file.''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
@@ -133,8 +146,8 @@ def get_args():
     args.background_tuple = make_background(args.background)
     return args
 
-
 if __name__ == '__main__':
+
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
     _args = get_args()
