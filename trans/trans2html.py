@@ -9,6 +9,13 @@ In Pycharm, the run config sets the default dir to ~/Documents/hrm.
 
 WARNING: if soffice exits without printing anything, check that you don't have
          libreOffice running in the background.
+
+The following workaround may avoid the above problem:
+
+TODO: add code
+ libreoffice "-env:UserInstallation=file:///tmp/LibO_Conversion" --headless --invisible --convert-to csv file.xls
+
+
 """
 
 import os
