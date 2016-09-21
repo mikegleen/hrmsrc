@@ -49,7 +49,7 @@ def fixdate(rawdate):
             fixed = dt.strptime(rawdate, fmt)
             if fixed.year > 1999:
                 fixed = dt(fixed.year - 100, fixed.month, fixed.day)
-            rtn = fixed.isoformat()[:10]
+            # rtn = fixed.isoformat()[:10]
             rtn = fixed  # .isoformat()[:10]
             break
         except ValueError:

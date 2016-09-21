@@ -39,7 +39,7 @@ if __name__ == '__main__':
         jpegname = leadpart + '.jpg'
         jpegpath = os.path.join(jpgbase, jpegname)
         if VERBOS > 0:
-            print (jpegpath)
+            print(jpegpath)
         scmd = SIPSCMD.format(pdf_file=pdfpath, jpg_file=jpegpath)
         if VERBOS > 0:
             print(scmd)

@@ -72,6 +72,9 @@ def pad_width(inimage, target_width, target_height):
     """
     trace(2, 'Begin pad_width. Target width, height = ({}, {})', target_width,
           target_height)
+    if _args.width:
+        target_width = _args.width
+        trace(2, 'Overriding target width: ', target_width)
     width, height = inimage.size
     wh_ratio = float(width) / float(height)
     unpadded_width = int(target_height * wh_ratio)
@@ -96,22 +99,24 @@ def onefile(infile, outdir):
     wh_ratio = width / height
     trace(2, "Input: {}\nSize (width, height) in pixels: {}, {}, "
           "width/height = {:.3f}", infile, width, height, wh_ratio)
-    trace(2, "Begin building portrait image. Target w/h ratio: {:.3f}",
-          PORTRAIT_RATIO)
-    if wh_ratio > PORTRAIT_RATIO:
-        portrait = pad_height(input_image, PORTRAIT_WIDTH, PORTRAIT_HEIGHT)
-    else:
-        portrait = pad_width(input_image, PORTRAIT_WIDTH, PORTRAIT_HEIGHT)
-    trace(2, "Begin building landscape image.  Target w/h ratio: {:.3f}",
-          LANDSCAPE_RATIO)
-    if wh_ratio > LANDSCAPE_RATIO:
-        landscape = pad_height(input_image, LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT)
-    else:
-        landscape = pad_width(input_image, LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT)
-    trace(1, 'Saving portrait thumbnail: {}', portrait_target)
-    portrait.save(portrait_target)
-    trace(1, 'Saving landscape thumbnail: {}', landscape_target)
-    landscape.save(landscape_target)
+    if _args.portrait:
+        trace(2, "Begin building portrait image. Target w/h ratio: {:.3f}",
+              PORTRAIT_RATIO)
+        if wh_ratio > PORTRAIT_RATIO:
+            portrait = pad_height(input_image, PORTRAIT_WIDTH, PORTRAIT_HEIGHT)
+        else:
+            portrait = pad_width(input_image, PORTRAIT_WIDTH, PORTRAIT_HEIGHT)
+        trace(1, 'Saving portrait thumbnail: {}', portrait_target)
+        portrait.save(portrait_target)
+    if _args.landscape:
+        trace(2, "Begin building landscape image.  Target w/h ratio: {:.3f}",
+              LANDSCAPE_RATIO)
+        if wh_ratio > LANDSCAPE_RATIO:
+            landscape = pad_height(input_image, LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT)
+        else:
+            landscape = pad_width(input_image, LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT)
+        trace(1, 'Saving landscape thumbnail: {}', landscape_target)
+        landscape.save(landscape_target)
 
 
 def main(args):
@@ -133,17 +138,34 @@ def get_args():
     extension.
     ''')
     parser.add_argument('infile', help='''Original sized input file.''')
-    parser.add_argument('-o', '--outdir', help='''Directory to contain the
-        output landscape file. If omitted, the default is "results/landscape".
-        ''', default=os.path.join('results', 'thumb'))
     parser.add_argument('-b', '--background', default=BACKGROUND, help='''
         Hex number describing the background color. Default = {}'''.format(
         BACKGROUND))
+    # parser.add_argument('--height', type=int, default=0, help='''
+    #     Set an explicit height to pad to.
+    #     ''')
+    parser.add_argument('-l', '--landscape', action='store_true', help='''
+        If set, only produce a landscape thumbnail.
+        ''')
+    parser.add_argument('-o', '--outdir',
+                        default=os.path.join('results', 'thumb'),
+                        help='''Directory to contain the
+        output landscape file. If omitted, the default is "results/thumb".
+        ''')
+    parser.add_argument('-p', '--portrait', action='store_true', help='''
+        If set, only produce a portrait thumbnail.
+        ''')
     parser.add_argument('-v', '--verbose', type=int, default=1, help='''
         Set the verbosity. The default is 1 which prints summary information.
         ''')
+    parser.add_argument('--width', type=int, default=0, help='''
+        Set an explicit width to pad to (portrait only).
+        ''')
+
     args = parser.parse_args()
     args.background_tuple = make_background(args.background)
+    if args.landscape is False and args.portrait is False:
+        args.landscape = args.portrait = True
     return args
 
 if __name__ == '__main__':

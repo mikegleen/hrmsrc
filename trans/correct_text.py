@@ -26,8 +26,8 @@ import sys
 import time
 
 TRACE_ON = True
-RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
-RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'pyprj', 'hrm', 'results')
+# RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'Documents', 'hrm', 'results')
+# RESULTSDIR = os.path.join('/', 'Users', 'mlg', 'pyprj', 'hrm', 'results')
 RESULTSDIR = os.path.join('.', 'results')
 CSVDIR = os.path.join(RESULTSDIR, 'csv')
 '''
