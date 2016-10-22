@@ -132,7 +132,7 @@ def get_args():
     ''')
     parser.add_argument('infile', help='''Original sized input file.''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
-        output landscape file. If omitted, the default is "results/landscape".
+        output landscape file. If omitted, the default is "results/thumb".
         ''', default=os.path.join('results', 'thumb'))
     parser.add_argument('-b', '--background', default=BACKGROUND, help='''
         Hex number describing the background color. Default = {}'''.format(
