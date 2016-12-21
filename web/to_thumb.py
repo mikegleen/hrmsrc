@@ -8,6 +8,7 @@ See get_args for details.
 
 """
 import argparse
+from collections import namedtuple
 import math
 import os.path
 from PIL import Image
@@ -21,6 +22,21 @@ LANDSCAPE_HEIGHT = 826
 
 PORTRAIT_RATIO = float(PORTRAIT_WIDTH) / float(PORTRAIT_HEIGHT)
 LANDSCAPE_RATIO = float(LANDSCAPE_WIDTH) / float(LANDSCAPE_HEIGHT)
+
+ImgSize = namedtuple('ImgSize', ['w', 'h'])
+EVENT_PORTRAIT = ImgSize(342, 484)
+EVENT_LANDSCAPE = ImgSize(1280, 826)
+MEDIACENTRE_THUMBNAIL = ImgSize(1280, 826)
+NEWS_THUMBNAIL = ImgSize(1280, 826)
+NEWS_WIDE = ImgSize(1280, 410)
+EXHIBITION_THUMBNAIL = ImgSize(700, 454)
+
+IMGS = {'ev-p': EVENT_PORTRAIT,
+        'ev-l': EVENT_LANDSCAPE,
+        'm-t': MEDIACENTRE_THUMBNAIL,
+        'n-t': NEWS_THUMBNAIL,
+        'n-w': NEWS_WIDE,
+        'ex-t': EXHIBITION_THUMBNAIL}
 
 
 def trace(level, template, *args):
@@ -87,6 +103,10 @@ def pad_width(inimage, target_width, target_height):
     return target_image
 
 
+def oneimage(img, sizeref):
+    pass
+
+
 def onefile(infile, outdir):
     basename = os.path.basename(infile)  # 'a/b/xyz.jpg' -> 'xyz.jpg'
     front, extension = os.path.splitext(basename)  # 'xyz.jpg' -> 'xyz', '.jpg'
@@ -139,8 +159,9 @@ def get_args():
     ''')
     parser.add_argument('infile', help='''Original sized input file.''')
     parser.add_argument('-b', '--background', default=BACKGROUND, help='''
-        Hex number describing the background color. Default = {}'''.format(
-        BACKGROUND))
+        Hex number describing the background color. Default = {}.
+        The number should be coded as six hex digits. The leading "0x" is
+        optional.'''.format(BACKGROUND))
     # parser.add_argument('--height', type=int, default=0, help='''
     #     Set an explicit height to pad to.
     #     ''')

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-  needed because of embedded "£"
 """
+
+This file is obsolete. Replaced by to_thumb.py
+
 Copy an image, resampling the pixels to shrink the resultant file.
 
 See get_args for details.
@@ -130,13 +133,15 @@ def get_args():
     but with _thumb_portrait and _thumb_landscape appended before the
     extension.
     ''')
-    parser.add_argument('infile', help='''Original sized input file.''')
+    parser.add_argument('infile', help='''Original sized input file or a
+        directory containing input files.''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
         output landscape file. If omitted, the default is "results/thumb".
         ''', default=os.path.join('results', 'thumb'))
     parser.add_argument('-b', '--background', default=BACKGROUND, help='''
-        Hex number describing the background color. Default = {}'''.format(
-        BACKGROUND))
+        Hex number describing the background color. Default = {}.
+        The number should be coded as six hex digits. The leading "0x" is
+        optional.'''.format(BACKGROUND))
     parser.add_argument('-v', '--verbose', type=int, default=1, help='''
         Set the verbosity. The default is 1 which prints summary information.
         ''')
