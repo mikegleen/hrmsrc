@@ -75,9 +75,6 @@ def pad_width(inimage, target_width, target_height):
     """
     trace(2, 'Begin pad_width. Target width, height = ({}, {})', target_width,
           target_height)
-    if _args.width:
-        target_width = _args.width
-        trace(2, 'Overriding target width: ', target_width)
     width, height = inimage.size
     wh_ratio = float(width) / float(height)
     unpadded_width = int(round(target_height * wh_ratio))
@@ -88,10 +85,6 @@ def pad_width(inimage, target_width, target_height):
                              _args.background_tuple)
     target_image.paste(resized_image, (x_origin, 0))
     return target_image
-
-
-def oneimage(img, sizeref):
-    pass
 
 
 def onefile(infile, outdir, img_sizes):
@@ -110,14 +103,14 @@ def onefile(infile, outdir, img_sizes):
     wh_ratio = width / height
     trace(2, "Input: {}\nSize (width, height) in pixels: {}, {}, "
           "width/height = {:.3f}", infile, width, height, wh_ratio)
-    for thumb in img_sizes:
-        thumb_width, thumb_height, thumb_name = img_sizes[thumb]
+    for key in img_sizes:
+        thumb_width, thumb_height, thumb_name = img_sizes[key]
         thumb_wh_ratio = float(thumb_width) / float(thumb_height)
         if wh_ratio > thumb_wh_ratio:
             thumb_image = pad_height(input_image, thumb_width, thumb_height)
         else:
             thumb_image = pad_width(input_image, thumb_width, thumb_height)
-        thumb_file_name = front + '_thumb_' + thumb + extension
+        thumb_file_name = front + '_thumb_' + key + extension
         thumb_path = os.path.join(outdir, thumb_file_name)
         trace(1, 'Saving thumbnail: {}, ({})', thumb_path, thumb_name)
         thumb_image.save(thumb_path)
@@ -127,6 +120,9 @@ def main(args):
     wh = THUMB_IMG_SIZES
     if args.width:
         wh = {'th': (args.width, args.height, 'anonymous')}
+    elif args.key:
+        imgsiz = THUMB_IMG_SIZES[args.key]
+        wh = {args.key: (imgsiz.w, imgsiz.h, imgsiz.name)}
     if os.path.isdir(args.infile):
         for filename in os.listdir(args.infile):
             if '_thumb_' in filename:
@@ -138,8 +134,11 @@ def main(args):
 
 def get_args():
     q = THUMB_IMG_SIZES
-    thumblist = ''.join(['\n    {}: {}x{} ({})'
-                        .format(x, q[x].w, q[x].h, q[x].name) for x in q])
+    thumblist = ('\n    key   W x H     Description' +
+                 ''.join(['\n    {:5} {:9} {}'
+                         .format(x,
+                                 '{}x{}'.format(q[x].w, q[x].h),
+                                 q[x].name) for x in q]))
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter,
                                      description='''
@@ -167,6 +166,9 @@ def get_args():
         than the set of files internally defined. An abbreviation of 'th' is
         used for the output filename.
         ''')
+    parser.add_argument('-k', '--key', help='''Specifies a single thumbnail
+    to produce. Do not specify a key and also an explicit width and height.
+    ''')
     parser.add_argument('-o', '--outdir',
                         default=os.path.join('results', 'thumb'),
                         help='''Directory to contain the
@@ -182,15 +184,24 @@ def get_args():
     args = parser.parse_args()
     args.background_tuple = make_background(args.background)
     if bool(args.height) != bool(args.width):
-        print('You must specify either both width and height or neither.')
-        raise ValueError
+        raise ValueError('You must specify either both width and height or'
+        + ' neither.')
+    if bool(args.key) and bool(args.height):
+        raise ValueError('You may not specify both the key and also height'
+                         + ' and width.')
+    if args.key and args.key not in THUMB_IMG_SIZES:
+        raise ValueError('Unrecognized key.')
     return args
 
 if __name__ == '__main__':
 
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    _args = get_args()
+    try:
+        _args = get_args()
+    except ValueError as v:
+        print(v)
+        sys.exit(1)
     trace(2, 'Background color: (0x{:02X}, 0x{:02X}, 0x{:02X})',
           *_args.background_tuple)
     main(_args)
