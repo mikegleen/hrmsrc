@@ -162,9 +162,9 @@ def get_args():
         Hex number describing the background color. Default = {}.
         The number should be coded as six hex digits. The leading "0x" is
         optional.'''.format(BACKGROUND))
-    # parser.add_argument('--height', type=int, default=0, help='''
-    #     Set an explicit height to pad to.
-    #     ''')
+    parser.add_argument('--height', type=int, default=0, help='''
+        Set an explicit height to pad to (sorry, -h is taken).
+        ''')
     parser.add_argument('-l', '--landscape', action='store_true', help='''
         If set, only produce a landscape thumbnail.
         ''')
@@ -179,7 +179,7 @@ def get_args():
     parser.add_argument('-v', '--verbose', type=int, default=1, help='''
         Set the verbosity. The default is 1 which prints summary information.
         ''')
-    parser.add_argument('--width', type=int, default=0, help='''
+    parser.add_argument('-w', '--width', type=int, default=0, help='''
         Set an explicit width to pad to (portrait only).
         ''')
 
