@@ -1,0 +1,38 @@
+"""
+Merge multiple PDF files into a single file.
+
+The input files must all be in the same directory. The files will be sorted by
+filename.
+
+Parameters:
+    1. Directory name containing files to be merged.
+    2. Output file name.
+
+
+"""
+import os
+from PyPDF2 import PdfFileMerger
+import sys
+
+VERBOS = 1
+
+
+def main(indir, outfilename):
+    output = PdfFileMerger()
+    for pdfname in sorted(os.listdir(indir)):
+        pdfpath = os.path.join(indir, pdfname)
+        if VERBOS > 0:
+            print(pdfpath)
+        if os.path.isdir(pdfpath):
+            continue
+        leadpart, extension = os.path.splitext(pdfname)
+        if extension.lower() != '.pdf':
+            continue
+        output.append(pdfpath)
+    output.write(outfilename)
+
+if __name__ == '__main__':
+    if sys.version_info.major < 3:
+        raise ImportError('requires Python 3')
+    main(sys.argv[1], sys.argv[2])
+
