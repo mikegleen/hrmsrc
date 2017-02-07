@@ -117,6 +117,7 @@ def onefile(infile, outdir, img_sizes):
 
 
 def main(args):
+    os.makedirs(args.outdir, exist_ok=True)
     wh = THUMB_IMG_SIZES
     if args.width:
         wh = {'th': (args.width, args.height, 'anonymous')}
