@@ -1,3 +1,8 @@
+"""
+    Search the subscribed_members_export...csv file from MailChimp for
+    duplicate names and report the corresponding email addresses.
+"""
+
 import sys
 import csv
 
