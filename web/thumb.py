@@ -140,7 +140,7 @@ def get_imgs(basekey):
             if key.startswith(preamble):
                 wh[key] = THUMB_IMG_SIZES[key]
     if not wh:
-        raise ValueError('Unrecognized key:' + basekey)
+        raise ValueError()
     trace(2,'get_imgs: returning {}', wh)
     return wh
 
@@ -153,7 +153,11 @@ def main(args):
     if args.width:
         wh = {'th': (args.width, args.height, 'anonymous', background)}
     elif args.key:
-        wh = get_imgs(args.key)
+        try:
+            wh = get_imgs(args.key)
+        except (ValueError, KeyError):
+            print('Unrecognized key:', args.key)
+            return
     if os.path.isdir(args.infile):
         for filename in os.listdir(args.infile):
             if '_thumb_' in filename:
