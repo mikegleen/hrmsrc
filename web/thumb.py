@@ -112,7 +112,7 @@ def onefile(infile, outdir, img_sizes):
         # 'FFFFFF' -> (255,255,255)
         background_tuple = make_background_tuple(background)
         trace(2, 'Background color: (0x{:02X}, 0x{:02X}, 0x{:02X})',
-              background_tuple)
+              *background_tuple)
         thumb_wh_ratio = float(thumb_width) / float(thumb_height)
         if wh_ratio > thumb_wh_ratio:
             thumb_image = pad_height(input_image, thumb_width, thumb_height,
@@ -122,35 +122,58 @@ def onefile(infile, outdir, img_sizes):
                                     background_tuple)
         thumb_file_name = front + '_thumb_' + key + extension
         thumb_path = os.path.join(outdir, thumb_file_name)
-        trace(1, 'Saving thumbnail: {}, ({})', thumb_path, thumb_name)
+        trace(1, '  {}, ({})', thumb_file_name, thumb_name)
         thumb_image.save(thumb_path)
+
+
+def get_imgs(basekey):
+    # The key could be a full key like "ev-p" or just a preamble like "ev".
+    if '-' in basekey:
+        img = THUMB_IMG_SIZES[basekey]
+        wh = {basekey: img}
+    else:
+        wh = {}
+        preamble = basekey + '-'
+        trace(2, 'preamble {}', preamble)
+        for key in THUMB_IMG_SIZES:
+            trace(2, 'key {}', key)
+            if key.startswith(preamble):
+                wh[key] = THUMB_IMG_SIZES[key]
+    if not wh:
+        raise ValueError('Unrecognized key:' + basekey)
+    trace(2,'get_imgs: returning {}', wh)
+    return wh
 
 
 def main(args):
     os.makedirs(args.outdir, exist_ok=True)
+    trace(1, "Output directory: {}", args.outdir)
     wh = THUMB_IMG_SIZES
     background = _args.background if _args.background else BACKGROUND
     if args.width:
         wh = {'th': (args.width, args.height, 'anonymous', background)}
     elif args.key:
-        img = THUMB_IMG_SIZES[args.key]
-        wh = {args.key: img}
+        wh = get_imgs(args.key)
     if os.path.isdir(args.infile):
         for filename in os.listdir(args.infile):
             if '_thumb_' in filename:
                 continue
-            onefile(filename, args.outdir, wh)
+            filepath = os.path.join(args.infile, filename)
+            if os.path.isdir(filepath):
+                continue
+            onefile(filepath, args.outdir, wh)
     else:
         onefile(args.infile, args.outdir, wh)
 
 
 def get_args():
     q = THUMB_IMG_SIZES
-    thumblist = ('\n    key   W x H     Description' +
-                 ''.join(['\n    {:5} {:9} {}'
+    thumblist = ('\n    key   W x H     bckgrnd Description' +
+                 ''.join(['\n    {:5} {:9} {}  {}'
                          .format(x,
                                  '{}x{}'.format(q[x].w, q[x].h),
-                                 q[x].name) for x in q]))
+                                 q[x].background, q[x].name) for x in
+                          sorted(q)]))
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter,
                                      description='''
@@ -158,15 +181,15 @@ def get_args():
     width and height values passed as parameters.
 
     The thumbnail files are created with the same name as the original file
-    but with the designated abbreviation appended before the extension. Thus
+    but with "_thumb_" and the file's key appended before the extension. Thus
     "jellytots.jpeg" becomes "jellytots_thumb_ev-l.jpeg" for Event Landscape
     thumbnail files. The default thumbnail files produced are:
     ''' + thumblist)
     parser.add_argument('infile', help='''There are two modes. If infile is
     a simple file, it is processed and output files are written to outdir.
     If it is a directory, all of the files in that directory are processed and
-    output is written to the same directory. To prevent output files being
-    re-processed, file names including "_thumb_" are skipped.''')
+    output is written to outdir. See --outdir below. File names including
+    "_thumb_" are skipped.''')
     parser.add_argument('-b', '--background', help='''
         Hex number describing the background color. The default depends upon
         which thumbnail is being produced.
@@ -179,12 +202,17 @@ def get_args():
         than the set of files internally defined. An abbreviation of 'th' is
         used for the output filename.
         ''')
-    parser.add_argument('-k', '--key', help='''Specifies a single thumbnail
-    to produce. Do not specify a key and also an explicit width and height.
+    parser.add_argument('-k', '--key', help='''Specifies a single thumbnail or
+    a group of thumbnails
+    to produce. A single thumbnail is specified by the key; the group is
+    specified by the preamble. For example, specify "ev" to produce the
+     thumbnails for "ev-p" and
+    "ev-l". Do not specify a key and also an explicit width and height.
     ''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
         output landscape file. If omitted, the default is the directory
-        "thumb" in the same directory that the input file resides.
+        "thumb" in the same directory that the input file resides. The
+        directory is created if necessary.
         ''')
     parser.add_argument('-v', '--verbose', type=int, default=1, help='''
         Set the verbosity. The default is 1 which prints summary information.
@@ -200,8 +228,6 @@ def get_args():
     if bool(args.key) and bool(args.height):
         raise ValueError('You may not specify both the key and also height'
                          + ' and width.')
-    if args.key and args.key not in THUMB_IMG_SIZES:
-        raise ValueError('Unrecognized key.')
     if not args.outdir:
         if os.path.isdir(args.infile):
             args.outdir = args.infile
