@@ -8,9 +8,10 @@ where the ISODate field is "N/A", update the strp_formats tuple as appropriate.
 If the year in the date is later than 1999, subtract 100 from the year.
 
 Input: the CSV file produced by read_html.py.
+       The file name must end with '.csv'
 Output: an XLSX formatted spreadsheet.
 Command line arg: the name of the file to process. The input file must be
-<arg>.csv in the results/csv directory and the output file will be <arg>.xlsx
+<name>.csv in the results/csv directory and the output file will be <name>.xlsx
 in the results/xlsx directory.
 
 """
@@ -103,6 +104,12 @@ def main():
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    csvpath = CSVPATH_TEMPLATE.format(sys.argv[1])
-    xlsxpath = XLSXPATH_TEMPLATE.format(sys.argv[1])
+    _arg = sys.argv[1]
+    if _arg.endswith('.csv'):
+        _arg = _arg[:-4]
+    else:
+        print('The input filename must end with ".csv". No action taken.')
+        sys.exit(1)
+    csvpath = CSVPATH_TEMPLATE.format(_arg)
+    xlsxpath = XLSXPATH_TEMPLATE.format(_arg)
     sys.exit(main())
