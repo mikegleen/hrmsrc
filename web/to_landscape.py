@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-  needed because of embedded "£"
 """
+
+DEPRECATED. Replaced by thumb.py
+
 Create a montage of a portrait format image and a plain landscape background
 so that it won't be cropped by the LiberateIT CMS.
 

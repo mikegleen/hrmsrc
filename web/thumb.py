@@ -127,9 +127,14 @@ def onefile(infile, outdir, img_sizes):
 
 
 def get_imgs(basekey):
+    """
+    
+    :param basekey: 
+    :return: The dictionary of wanted keys and their associated Img instances. 
+    """
     # The key could be a full key like "ev-p" or just a preamble like "ev".
     if '-' in basekey:
-        img = THUMB_IMG_SIZES[basekey]
+        img = THUMB_IMG_SIZES[basekey]  # throws KeyError if the key is bad
         wh = {basekey: img}
     else:
         wh = {}

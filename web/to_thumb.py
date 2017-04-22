@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-  needed because of embedded "£"
 """
+
+DEPRECATED. Replaced by thumb.py
+
 Create two thumbnail images:
     portrait: width 342, height 484
     landscape: width 1280, height 826
