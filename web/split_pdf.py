@@ -3,7 +3,7 @@
 Input is a PDF file specified in the first parameter.
 Output is one file in the current directory per page in the input file. The
 name of the output files is <input basename>-page<n> starting with the zero-th
-page.
+page, but numbering the files from 001.
 """
 import argparse
 import os.path
@@ -14,19 +14,24 @@ import sys
 def getargs():
     parser = argparse.ArgumentParser()
     parser.add_argument('infile')
-    parser.add_argument('-o', '--outdir', default='.')
+    parser.add_argument('-o', '--outdir', default='.', help='''
+    the output directory to contain the split pages. The default is
+    the directory containing the input file.
+    ''')
     args = parser.parse_args()
     return args
 
 
 def main(args):
     inputpdf = PdfFileReader(open(args.infile, "rb"))
-    basename = os.path.splitext(args.infile)[0]
+    basename = os.path.split(args.infile)[1]
+    basename = os.path.splitext(basename)[0]
     for i in range(inputpdf.numPages):
         output = PdfFileWriter()
         output.addPage(inputpdf.getPage(i))
         outdirpath = os.path.join(
-            args.outdir, "{}-page{:03}.pdf".format(basename, i))
+            args.outdir, "{}-{:03}.pdf".format(basename, i + 1))
+        # print(outdirpath)
         with open(outdirpath, "wb") as outputStream:
             output.write(outputStream)
 
