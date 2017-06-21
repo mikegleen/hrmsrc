@@ -3,17 +3,54 @@
 Produce a report of the daily revenue.
 Input is the file produced by clean.py.
 """
-
+import argparse
+import datetime as dt
+import os.path
 import pandas as pd
 import sys
 
+OUTDIR = '/Users/mlg/pyprj/hrm/results/tickets'
 
-def main(incsvfile, outreport):
+
+def getargs():
+    parser = argparse.ArgumentParser(
+        description='''
+
+        ''')
+    parser.add_argument('infile', help='''
+         The CSV file that has been cleaned by tickets.clean.py''')
+    parser.add_argument('-o', '--outdir', default=OUTDIR,
+                        help='''Directory to contain the
+        output report file. If omitted, the default is the directory
+        "~/pyrpj/hrm/results/analytics/tickets".
+        ''')
+    parser.add_argument('-m', '--month', type=int,
+                        choices=list(range(1, 13)), help='''
+    If specified, limit reporting to the given month in the current year.''')
+    args = parser.parse_args()
+    if args.month:
+        today = dt.date.today()
+        args.year = today.year
+        if args.month > today.month:
+            args.year -= 1
+    return args
+
+
+def main(args):
+    incsvfile = args.infile
+    basename = os.path.split(args.infile)[1]
+    basename = os.path.splitext(basename)[0] + '.xlsx'
+    outreport = os.path.join(args.outdir, basename)
+    print(f"Writing to: {outreport}.")
     df = pd.read_csv(incsvfile,
                      usecols=(0, 1, 2, 4),
                      names='date quantity type totprice'.split(),
                      index_col=False)
     df.date = pd.to_datetime(df.date, format='%d/%m/%Y')
+    if args.month:
+        m = df.date.dt.month
+        y = df.date.dt.year
+        df = df[(m == args.month) & (y == args.year)]
     g = df.groupby(['date', 'type'])
     gg = g.sum().unstack().fillna('')
     gg['datetot'] = df.groupby('date').sum()['totprice']
@@ -23,10 +60,5 @@ def main(incsvfile, outreport):
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    if len(sys.argv) > 2:
-        inf = sys.argv[1]
-        outf = sys.argv[2]
-        main(inf, outf)
-    else:
-        print('Two parameters needed, the input cleaned file and the'
-              ' output report file.')
+    _args = getargs()
+    main(_args)
