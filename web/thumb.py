@@ -13,16 +13,19 @@ from PIL import Image
 import sys
 
 BACKGROUND = 'F2F4F6'
+WHITE = 'FFFFFF'
 
 Img = namedtuple('Img', ['w', 'h', 'name', 'background'])
 
+# The following image sizes are from documentation supplied by LiberatingIT
 THUMB_IMG_SIZES = {
-    'ev-p': Img(342, 484, 'event portrait', 'FFFFFF'),
-    'ev-l': Img(1280, 826, 'event landscape', 'FFFFFF'),
-    'm-t': Img(1280, 826, 'media centre thumbnail', 'FFFFFF'),
-    'n-t': Img(1280, 826, 'news thumbnail', 'FFFFFF'),
-    'n-w': Img(1280, 410, 'news wide', 'FFFFFF'),
+    'ev-p': Img(342, 484, 'event portrait', WHITE),
+    'ev-l': Img(1280, 826, 'event landscape', WHITE),
+    'm-t': Img(1280, 826, 'media centre thumbnail', WHITE),
+    'n-t': Img(1280, 826, 'news thumbnail', WHITE),
+    'n-w': Img(1280, 410, 'news wide', WHITE),
     'ex-t': Img(700, 454, 'exhibition thumbnail', BACKGROUND),
+    'ex-p': Img(1240, 1946, 'exhibition portrait image', WHITE),
 }
 
 
