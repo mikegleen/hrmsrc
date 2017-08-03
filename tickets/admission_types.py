@@ -1,4 +1,4 @@
-admission_types = [
+ADMISSION_TYPES = [
     "Adult",
     "Adult with Gift Aid",
     "Child with Gift Aid",

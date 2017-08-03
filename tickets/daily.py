@@ -15,7 +15,8 @@ OUTDIR = '/Users/mlg/pyprj/hrm/results/tickets'
 def getargs():
     parser = argparse.ArgumentParser(
         description='''
-
+        Produce a report of the daily revenue.
+        Input is the file produced by clean.py.
         ''')
     parser.add_argument('infile', help='''
          The CSV file that has been cleaned by tickets.clean.py''')
@@ -38,10 +39,11 @@ def getargs():
 
 def main(args):
     incsvfile = args.infile
-    basename = os.path.split(args.infile)[1]
-    basename = os.path.splitext(basename)[0] + '.xlsx'
+    basename = 'tickets_'
+    if _args.month:
+        basename += f'{args.year:04d}-{args.month:-02d}'
+    basename += '_daily.xlsx'
     outreport = os.path.join(args.outdir, basename)
-    print(f"Writing to: {outreport}.")
     df = pd.read_csv(incsvfile,
                      usecols=(0, 1, 2, 4),
                      names='date quantity type totprice'.split(),
@@ -54,6 +56,7 @@ def main(args):
     g = df.groupby(['date', 'type'])
     gg = g.sum().unstack().fillna('')
     gg['datetot'] = df.groupby('date').sum()['totprice']
+    print(f"Writing to: {outreport}.")
     gg.to_excel(outreport)
 
 

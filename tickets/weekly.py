@@ -5,7 +5,7 @@ Input is the file produced by clean.py.
 """
 
 import argparse
-import datetime
+import datetime as dt
 import os.path
 import pandas as pd
 import sys
@@ -19,12 +19,15 @@ OUTDIR = '/Users/mlg/pyprj/hrm/results/analytics/tickets'
 
 
 def one_report(df, suffix):
-    outreport = os.path.join(_args.outdir, _basename + '_weekly_' + suffix
-                             + '.xlsx')
+    basename = 'tickets_'
+    if _args.month:
+        basename += f'{_args.year:04d}-{_args.month:-02d}_'
+    basename += 'weekly_' + suffix + '.xlsx'
+    outreport = os.path.join(_args.outdir, basename)
     g = df.groupby(['date', 'type'])
     gg = g.sum().unstack().fillna('')
     gg['weektot'] = df.groupby('date').sum()['totprice']
-
+    print(f"Writing to: {outreport}.")
     gg.to_excel(outreport)
 
 
@@ -70,6 +73,11 @@ def getargs():
     args = parser.parse_args()
     if not args.outdir:
         args.outdir = OUTDIR
+    if args.month:
+        today = dt.date.today()
+        args.year = today.year
+        if args.month > today.month:
+            args.year -= 1
     return args
 
 
