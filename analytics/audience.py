@@ -1,3 +1,7 @@
+"""
+    Consolidate the weekly report from Google Analytics and produce a CSV file
+    with one row for each date.
+"""
 import os.path
 import pandas as pd
 import sys
@@ -11,17 +15,19 @@ def main(audiencedir):
             continue
         filepath = os.path.join(audiencedir, filename)
         tempdf = pd.read_csv(filepath, dtype=str, skiprows=6, header=0,
-                             names=['Day', 'Sessions'])
+                             names=['Day', 'Sessions'], dayfirst=True,
+                             parse_dates=[0])
         df = df.append(tempdf, ignore_index=True)
     df.dropna(inplace=True)
     df.sort_values('Day', inplace=True)
-
+    df.to_csv(sys.argv[2], index=False)
 
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 2:
         main(sys.argv[1])
     else:
-        print('One parameter needed, the input CSV file.')
+        print('Two parameters needed, the input CSV file and the output'
+              ' CSV file.')
 

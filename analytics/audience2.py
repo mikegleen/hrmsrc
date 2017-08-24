@@ -5,7 +5,7 @@
 
     Assume a fixed format of the weekly analytics file.
     Skip the first 13 rows.
-    The first parameter on row 14 is the week-ending date.
+    The first parameter on row 14 is the week-ending date (on a Thursday).
     The 2nd parameter on row 15 is the week's total hits.
 """
 import datetime
