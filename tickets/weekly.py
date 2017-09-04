@@ -38,12 +38,12 @@ def main():
                      usecols=(0,1,2,4),
                      index_col=False)
     dfdate = pd.to_datetime(df.date, format='%d/%m/%Y')
+    if _args.month:
+        m = dfdate.dt.month
+        y = dfdate.dt.year
+        df = df[(m == _args.month) & (y == _args.year)]
     # Coerce the date to be the first day of the week (Monday).
     df['date'] = dfdate - pd.to_timedelta(dfdate.dt.dayofweek, unit='D')
-    if _args.month:
-        m = df.date.dt.month
-        y = df.date.dt.year
-        df = df[(m == _args.month) & (y == _args.year)]
     one_report(df, 'full')
     df2 = df[df.type.isin(ADMISSION_TYPES)]
     one_report(df2, 'admission')
