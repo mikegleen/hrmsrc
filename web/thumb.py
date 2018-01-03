@@ -61,7 +61,7 @@ def pad_height(inimage, target_width, target_height, background):
     trace(2, 'Resizing image to ({}, {})', target_width, unpadded_height)
     resized_image = inimage.resize((target_width, unpadded_height))
     y_origin = int(math.ceil((target_height - unpadded_height) / 2.))
-    target_image = Image.new('RGBA', (target_width, target_height),
+    target_image = Image.new('RGB', (target_width, target_height),
                              background)
     target_image.paste(resized_image, (0, y_origin))
     return target_image
@@ -86,7 +86,7 @@ def pad_width(inimage, target_width, target_height, background):
     trace(2, "Resizing image to ({}, {})", unpadded_width, target_height)
     resized_image = inimage.resize((unpadded_width, target_height))
     x_origin = int(math.ceil((target_width - unpadded_width) / 2.))
-    target_image = Image.new('RGBA', (target_width, target_height),
+    target_image = Image.new('RGB', (target_width, target_height),
                              background)
     target_image.paste(resized_image, (x_origin, 0))
     return target_image
@@ -248,8 +248,8 @@ def get_args():
         args.outdir = os.path.join(args.outdir, 'thumb')
     return args
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
     try:
