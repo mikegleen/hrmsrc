@@ -49,6 +49,7 @@ def copy_sheet(oldwb, wb, tab):
 
 
 def one_sheet(ws):
+    lastrow = None
     trace(2, 'sheet: {}', ws.title)
     row2 = ws[2]
     for cell in row2:
@@ -62,7 +63,7 @@ def one_sheet(ws):
     cell.alignment = Alignment(horizontal='center')
     cell.border = TOP_BORDER
     ws.column_dimensions['A'].width = 12
-    datetot = None
+    datetot = totprice = None
     for cell in ws[1]:
         if cell.value == 'totprice':
             totprice = cell.col_idx
@@ -84,6 +85,7 @@ def one_sheet(ws):
         cell.border = LEFT_BORDER
 
     # Compute total visitor counts
+    c = None
     for col in ws.iter_cols(min_col=2, max_col=totprice - 1):
         total = 0
         for c in col[4:]:
