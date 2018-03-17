@@ -14,6 +14,7 @@ import os
 import os.path
 import re
 import sys
+
 TOP_BORDER = Border(top=Side(border_style='thin'))
 LEFT_BORDER = Border(left=Side(border_style='thin'))
 LEFT_TOP_BORDER = Border(top=Side(border_style='thin'),
@@ -82,7 +83,6 @@ def one_sheet(ws):
     for cell in ws[get_column_letter(datetot)]:
         cell.border = LEFT_BORDER
 
-
     # Compute total visitor counts
     for col in ws.iter_cols(min_col=2, max_col=totprice - 1):
         total = 0
@@ -102,10 +102,8 @@ def one_sheet(ws):
         cell = ws.cell(row=lastrow + 1, column=c.col_idx, value=total)
         cell.number_format = '£0.00'
         cell.border = TOP_BORDER
-    cell = ws.cell(row=lastrow + 1, column=totprice)
-    cell.border = LEFT_TOP_BORDER
-    cell = ws.cell(row=lastrow + 1, column=datetot)
-    cell.border = LEFT_TOP_BORDER
+    ws.cell(row=lastrow + 1, column=totprice).border = LEFT_TOP_BORDER
+    ws.cell(row=lastrow + 1, column=datetot).border = LEFT_TOP_BORDER
 
 
 def main():
@@ -120,11 +118,13 @@ def main():
             print(f'Unknown file "{f}" skipped. Failed pattern match.')
             continue
         tabname = mat.group(1)
+        if tabname == 'merged':  # in case we re-run the script
+            continue
         wbpath = os.path.join(_args.indir, f)
         oldworkbook = load_workbook(wbpath)
         ws = copy_sheet(oldworkbook, workbook, tabname)
         one_sheet(ws)
-
+    print(f'Writing to: {_args.outfile}')
     workbook.save(_args.outfile)
 
 
