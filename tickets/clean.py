@@ -16,6 +16,7 @@ def main(infile, outfile):
         if line[0] != ' ':
             outfile.write(line)
 
+
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
@@ -28,3 +29,4 @@ if __name__ == '__main__':
     else:
         print('Two parameters needed, the original ticket report and the'
               ' output cleaned file.')
+    print('End clean.')
