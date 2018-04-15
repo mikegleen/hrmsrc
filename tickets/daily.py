@@ -65,3 +65,4 @@ if __name__ == '__main__':
         raise ImportError('requires Python 3')
     _args = getargs()
     main(_args)
+    print('End daily.')
