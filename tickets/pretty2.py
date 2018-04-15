@@ -43,27 +43,15 @@ def copy_sheet(oldwb, wb, tab):
     oldws = oldwb.active
     for row in oldws.iter_rows():
         for oldcell in row:
-            cell = ws.cell(row=oldcell.row, column=oldcell.col_idx,
-                           value=oldcell.value)
+            ws.cell(row=oldcell.row, column=oldcell.col_idx,
+                    value=oldcell.value)
     return ws
 
 
 def one_sheet(ws):
-    lastrow = None
-    trace(2, 'sheet: {}', ws.title)
-    row2 = ws[2]
-    for cell in row2:
-        cell.alignment = Alignment(textRotation=90, horizontal='center')
-    for cell in ws['A']:
-        cell.style = DATE_STYLE
-        cell.alignment = Alignment(horizontal='center')
-        lastrow = cell.row
-    cell = ws.cell(row=lastrow + 1, column=1, value='Total')
-    cell.font = Font(bold=True)
-    cell.alignment = Alignment(horizontal='center')
-    cell.border = TOP_BORDER
-    ws.column_dimensions['A'].width = 12
     datetot = totprice = None
+    trace(2, 'sheet: {}', ws.title)
+    lastrow = len(ws['A'])
     for cell in ws[1]:
         if cell.value == 'totprice':
             totprice = cell.col_idx
@@ -77,6 +65,14 @@ def one_sheet(ws):
                    end_row=1, end_column=totprice - 1)
     ws.merge_cells(start_row=1, start_column=totprice,
                    end_row=1, end_column=datetot - 1)
+
+    for cell in ws[2]:
+        cell.alignment = Alignment(textRotation=90, horizontal='center')
+
+    ws.column_dimensions['A'].width = 12
+    for cell in ws['A']:
+        cell.style = DATE_STYLE
+        cell.alignment = Alignment(horizontal='center')
     for cell in ws['B']:
         cell.border = LEFT_BORDER
     for cell in ws[get_column_letter(totprice)]:
@@ -84,11 +80,16 @@ def one_sheet(ws):
     for cell in ws[get_column_letter(datetot)]:
         cell.border = LEFT_BORDER
 
+    cell = ws.cell(row=lastrow + 1, column=1, value='Total')
+    cell.font = Font(bold=True)
+    cell.alignment = Alignment(horizontal='center')
+    cell.border = TOP_BORDER
+
     # Compute total visitor counts
     c = None
     for col in ws.iter_cols(min_col=2, max_col=totprice - 1):
         total = 0
-        for c in col[4:]:
+        for c in col[3:]:
             if c.value:
                 total += int(c.value)
         cell = ws.cell(row=lastrow + 1, column=c.col_idx, value=total)
@@ -104,6 +105,7 @@ def one_sheet(ws):
         cell = ws.cell(row=lastrow + 1, column=c.col_idx, value=total)
         cell.number_format = '£0.00'
         cell.border = TOP_BORDER
+    ws.cell(row=lastrow + 1, column=2).border = LEFT_TOP_BORDER
     ws.cell(row=lastrow + 1, column=totprice).border = LEFT_TOP_BORDER
     ws.cell(row=lastrow + 1, column=datetot).border = LEFT_TOP_BORDER
 
