@@ -19,6 +19,7 @@ TOP_BORDER = Border(top=Side(border_style='thin'))
 LEFT_BORDER = Border(left=Side(border_style='thin'))
 LEFT_TOP_BORDER = Border(top=Side(border_style='thin'),
                          left=Side(border_style='thin'))
+CENTER = Alignment(horizontal='center')
 DATE_STYLE = NamedStyle(name='datestyle', number_format='YYYY-MM-DD')
 
 # Pattern to match filename like "tickets_2018-02_weekly_other.xlsx" and
@@ -59,8 +60,8 @@ def one_sheet(ws):
             datetot = cell.col_idx
     trace(2, 'lastrow = {}, datetot = {}, totprice = {}',
           lastrow, datetot, totprice)
-    ws.cell(row=1, column=2).alignment = Alignment(horizontal='center')
-    ws.cell(row=1, column=totprice).alignment = Alignment(horizontal='center')
+    ws.cell(row=1, column=2).alignment = CENTER
+    ws.cell(row=1, column=totprice).alignment = CENTER
     ws.merge_cells(start_row=1, start_column=2,
                    end_row=1, end_column=totprice - 1)
     ws.merge_cells(start_row=1, start_column=totprice,
@@ -72,7 +73,7 @@ def one_sheet(ws):
     ws.column_dimensions['A'].width = 12
     for cell in ws['A']:
         cell.style = DATE_STYLE
-        cell.alignment = Alignment(horizontal='center')
+        cell.alignment = CENTER
     for cell in ws['B']:
         cell.border = LEFT_BORDER
     for cell in ws[get_column_letter(totprice)]:
@@ -82,7 +83,7 @@ def one_sheet(ws):
 
     cell = ws.cell(row=lastrow + 1, column=1, value='Total')
     cell.font = Font(bold=True)
-    cell.alignment = Alignment(horizontal='center')
+    cell.alignment = CENTER
     cell.border = TOP_BORDER
 
     # Compute total visitor counts
@@ -155,4 +156,4 @@ if __name__ == '__main__':
         raise ImportError('requires Python 3.6')
     _args = getargs()
     main()
-    print('End prettifier.')
+    print('End pretty2.')
