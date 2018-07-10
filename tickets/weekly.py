@@ -88,3 +88,4 @@ if __name__ == '__main__':
     _basename = os.path.split(_args.infile)[1]
     _basename = os.path.splitext(_basename)[0]
     main()
+    print('End weekly.')
