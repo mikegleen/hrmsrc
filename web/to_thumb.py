@@ -37,8 +37,8 @@ EXHIBITION_THUMBNAIL = ImgSize(700, 454)
 IMGS = {'ev-p': EVENT_PORTRAIT,
         'ev-l': EVENT_LANDSCAPE,
         'm-t': MEDIACENTRE_THUMBNAIL,
-        'n-t': NEWS_THUMBNAIL,
-        'n-w': NEWS_WIDE,
+        'minor-t': NEWS_THUMBNAIL,
+        'minor-w': NEWS_WIDE,
         'ex-t': EXHIBITION_THUMBNAIL}
 
 

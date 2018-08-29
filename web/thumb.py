@@ -7,10 +7,12 @@ See get_args for details.
 """
 import argparse
 from collections import namedtuple
+from colorama import Fore, Style
 import math
 import os.path
 from PIL import Image
 import sys
+
 
 BACKGROUND = 'F2F4F6'
 WHITE = 'FFFFFF'
@@ -102,7 +104,8 @@ def onefile(infile, outdir, img_sizes):
     try:
         input_image = Image.open(infile)
     except OSError:
-        print('Skipping unrecognized file:', infile)
+        print(f'{Fore.RED}Cannot find file:', infile, Style.RESET_ALL,
+              file=sys.stderr)
         return
     width, height = input_image.size
     wh_ratio = width / height

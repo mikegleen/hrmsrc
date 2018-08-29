@@ -2,7 +2,7 @@
 """
 Input is a PDF file specified in the first parameter.
 Output is one file in the current directory per page in the input file. The
-name of the output files is <input basename>-page<n> starting with the zero-th
+name of the output files is <input basename>-page<minor> starting with the zero-th
 page, but numbering the files from 001.
 """
 import argparse

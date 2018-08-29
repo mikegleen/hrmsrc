@@ -27,6 +27,7 @@ def main(indir, outfilename):
             continue
         leadpart, extension = os.path.splitext(pdfname)
         if extension.lower() != '.pdf':
+            print(f'Ignoring {pdfname}')
             continue
         output.append(pdfpath)
     output.write(outfilename)
