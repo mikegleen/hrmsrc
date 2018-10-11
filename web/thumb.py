@@ -28,6 +28,8 @@ THUMB_IMG_SIZES = {
     'n-w': Img(1280, 410, 'news wide', WHITE),
     'ex-t': Img(700, 454, 'exhibition thumbnail', BACKGROUND),
     'ex-p': Img(1240, 1946, 'exhibition portrait image', WHITE),
+    'sq-x': Img(1024, 1024, 'square for skiddle', WHITE),
+    'nm-x': Img(1024, 680, 'netmums', WHITE),
 }
 
 
