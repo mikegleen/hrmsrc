@@ -2,7 +2,7 @@
 """
     Clean the Ticket Report file.
     1. Delete the first 4 lines of title, comments, etc.
-    2. Convert the input latin-1 (iso-8859-1) input to utf-8
+    2. Convert the input latin-1 (iso-8859-1) to utf-8
     3. Delete lines starting with ' ' which are summary lines.
 """
 import codecs
