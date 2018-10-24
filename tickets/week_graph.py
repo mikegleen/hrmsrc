@@ -5,6 +5,7 @@ Input is the file produced by clean.py.
 """
 
 import argparse
+from openpyxl import Workbook, load_workbook
 import datetime as dt
 import os.path
 import pandas as pd
@@ -76,10 +77,7 @@ def getargs():
         Input is the file produced by clean.py.
         ''')
     parser.add_argument('infile', help='''
-         The CSV file that has been cleaned by tickets.clean.py''')
-    parser.add_argument('-m', '--month', type=int,
-                        choices=list(range(1, 13)), help='''
-    If specified, limit reporting to the given month in the current year.''')
+         The XLSX file that has been cleaned by tickets.clean.py''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
         output report file. If omitted, the default is the directory
         "results" in the same directory that the input file resides.
@@ -87,11 +85,6 @@ def getargs():
     args = parser.parse_args()
     if not args.outdir:
         args.outdir = OUTDIR
-    if args.month:
-        today = dt.date.today()
-        args.year = today.year
-        if args.month > today.month:
-            args.year -= 1
     return args
 
 
@@ -102,4 +95,4 @@ if __name__ == '__main__':
     _basename = os.path.split(_args.infile)[1]
     _basename = os.path.splitext(_basename)[0]
     main()
-    print('End week_totals.')
+    print('End week_graph.')
