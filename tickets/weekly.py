@@ -10,7 +10,7 @@ import os.path
 import pandas as pd
 import sys
 
-from admission_types import ADMISSION_TYPES
+from config import ADMISSION_TYPES
 
 
 OUTDIR = '/Users/mlg/pyprj/hrm/results/analytics/tickets'

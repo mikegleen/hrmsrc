@@ -53,7 +53,11 @@ if __name__ == '__main__':
     if sys.version_info.major < 3 or sys.version_info.minor < 6:
         raise ImportError('requires Python 3.6')
     _args = getargs()
-    _basename = os.path.split(_args.infile)[1]
-    _basename = os.path.splitext(_basename)[0]
+    with open(_args.infile) as inf:
+        line = inf.readline()
+        if line.startswith(';'):
+            print('The input file is the raw CSV file. You must use the'
+                  ' cleaned file.')
+            sys.exit(-1)
     main(_args.infile,  _args.outfile)
     print('End by_dow.')

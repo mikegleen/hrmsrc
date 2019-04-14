@@ -16,14 +16,19 @@ import re
 import sys
 
 FILENAMEPAT = r'tickets_\d{4}-\d{2}(_\d{4}-\d{2})*.csv'
+SKIPLINES = 4
 
 
 def main(infile, outfile):
     global alldates  # contains dates found in previous files
     print(f'Processing {infile.name}.')
     newdates = set()
-    for i in range(4):
-        next(infile)
+    if SKIPLINES:
+        line = next(infile)
+        if line[0] != ';':
+            print(f'Input file {infile.name} is not a raw CSV file.')
+        for i in range(SKIPLINES - 1):
+            next(infile)
     nlines = 0
     for line in infile:
         if line[0] != ' ':
@@ -61,4 +66,4 @@ if __name__ == '__main__':
         inpath = os.path.join(indir, inf)
         with codecs.open(inpath, 'r', 'latin_1') as incsv:
             main(incsv, outcsv)
-    print('End clean.')
+    print('End merge_tickets.')

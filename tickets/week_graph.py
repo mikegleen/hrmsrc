@@ -11,7 +11,7 @@ import os.path
 import pandas as pd
 import sys
 
-from admission_types import ADMISSION_TYPES
+from config import ADMISSION_TYPES
 
 
 OUTDIR = '/Users/mlg/pyprj/hrm/results/analytics/tickets'
@@ -77,7 +77,7 @@ def getargs():
         Input is the file produced by clean.py.
         ''')
     parser.add_argument('infile', help='''
-         The XLSX file that has been cleaned by tickets.clean.py''')
+         The XLSX file that has been cleaned by tickets/clean.py''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
         output report file. If omitted, the default is the directory
         "results" in the same directory that the input file resides.
