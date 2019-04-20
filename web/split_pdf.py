@@ -35,6 +35,7 @@ def main(args):
         with open(outdirpath, "wb") as outputStream:
             output.write(outputStream)
 
+
 if __name__ == '__main__':
     if sys.version_info.major < 3:
         raise ImportError('requires Python 3')
