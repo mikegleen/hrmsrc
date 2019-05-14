@@ -44,14 +44,19 @@ def copy_sheet(oldwb, wb, tab):
     oldws = oldwb.active
     for row in oldws.iter_rows():
         for oldcell in row:
+            trace(3, 'oldcell: {}', oldcell.coordinate)
+            # skip merged cells
+            if oldcell.value is None:
+                continue
             ws.cell(row=oldcell.row, column=oldcell.col_idx,
                     value=oldcell.value)
     return ws
 
 
 def one_sheet(ws):
+    trace(2, 'sheet: {}, max_row: {}, max_column: {}',
+          ws.title, ws.max_row, ws.max_column)
     datetot = totprice = None
-    trace(2, 'sheet: {}', ws.title)
     lastrow = len(ws['A'])
     for cell in ws[1]:
         if cell.value == 'totprice':
@@ -115,6 +120,7 @@ def main():
     workbook = Workbook()
     del workbook[workbook.sheetnames[0]]  # remove the default sheet
     for f in sorted(os.listdir(_args.indir)):
+        trace(2, 'input: {}', f)
         if not f.endswith('.xlsx'):
             print(f'Unknown file "{f}" skipped. Not ending in .xlsx.')
             continue
@@ -124,6 +130,7 @@ def main():
             continue
         tabname = mat.group(1)
         if tabname == 'merged':  # in case we re-run the script
+            trace(2, 'skipping: {}', f)
             continue
         wbpath = os.path.join(_args.indir, f)
         oldworkbook = load_workbook(wbpath)
@@ -155,5 +162,7 @@ if __name__ == '__main__':
     if sys.version_info.major < 3 or sys.version_info.minor < 6:
         raise ImportError('requires Python 3.6')
     _args = getargs()
+    if _args.verbose > 1:
+        print(f'verbosity: {_args.verbose}')
     main()
     print('End pretty2.')
