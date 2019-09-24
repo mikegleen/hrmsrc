@@ -19,8 +19,11 @@ WHITE = 'FFFFFF'
 
 Img = namedtuple('Img', ['w', 'h', 'name', 'background'])
 
-# The following image sizes are from documentation supplied by LiberatingIT
+# The following image sizes are from documentation supplied by LiberatingIT.
+# The keys ending in '-x' are meant to be used with just the preamble. So,
+# instead of specifying '-k b-x', just specify '-k b'.
 THUMB_IMG_SIZES = {
+    'b-x': Img(1000, 648, 'box module', WHITE),
     'ev-p': Img(342, 484, 'event portrait', WHITE),
     'ev-l': Img(1280, 826, 'event landscape', WHITE),
     'm-t': Img(1280, 826, 'media centre thumbnail', WHITE),
@@ -30,6 +33,8 @@ THUMB_IMG_SIZES = {
     'ex-p': Img(1240, 1946, 'exhibition portrait image', WHITE),
     'sq-x': Img(1024, 1024, 'square for skiddle', WHITE),
     'nm-x': Img(1024, 680, 'netmums', WHITE),
+    'v-t': Img(1280, 826, 'volunteer thumbnail', WHITE),
+    'v-w': Img(1280, 410, 'volunteer wide', WHITE),
 }
 
 
@@ -195,7 +200,8 @@ def get_args():
                                      argparse.RawDescriptionHelpFormatter,
                                      description='''
     Create multiple thumbnail images using a predefined set of dimensions or
-    width and height values passed as parameters.
+    width and height values passed as parameters. Borders are added at the top
+    and bottom or the sides to fit the given dimensions.
 
     The thumbnail files are created with the same name as the original file
     but with "_thumb_" and the file's key appended before the extension. Thus
@@ -227,7 +233,7 @@ def get_args():
     "ev-l". Do not specify a key and also an explicit width and height.
     ''')
     parser.add_argument('-o', '--outdir', help='''Directory to contain the
-        output landscape file. If omitted, the default is the directory
+        output thumbnail file. If omitted, the default is the directory
         "thumb" in the same directory that the input file resides. The
         directory is created if necessary.
         ''')
