@@ -8,9 +8,15 @@
 import codecs
 import sys
 
+FIRSTLINE = ';Detailed Ticket Report By Date'
+
 
 def main(infile, outfile):
-    for i in range(4):
+    line = next(infile)
+    if line.strip() != FIRSTLINE:
+        print(f'The first line of the input CSV file is not "{FIRSTLINE}"')
+        sys.exit(-1)
+    for i in range(3):
         next(infile)
     for line in infile:
         if line[0] != ' ':
@@ -18,8 +24,7 @@ def main(infile, outfile):
 
 
 if __name__ == '__main__':
-    if sys.version_info.major < 3:
-        raise ImportError('requires Python 3')
+    assert sys.version_info >= (3, 6)
     if len(sys.argv) > 2:
         inf = sys.argv[1]
         outf = sys.argv[2]
