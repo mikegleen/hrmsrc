@@ -58,7 +58,7 @@ if __name__ == '__main__':
               ' ticket reports.')
         sys.exit(2)
     outcsv = open(outf, 'w')
-    for inf in os.listdir(indir):
+    for inf in sorted(os.listdir(indir)):
         m = re.match(FILENAMEPAT, inf)
         if not m:
             print(f'Filename ignored: {inf}.')
