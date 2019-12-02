@@ -25,6 +25,7 @@ DATE_STYLE = NamedStyle(name='datestyle', number_format='YYYY-MM-DD')
 # Pattern to match filename like "tickets_2018-02_weekly_other.xlsx" and
 # extract "weekly_other".
 NAMEPAT = r'tickets_\d{4}-\d{2}_(.*)\.xlsx'
+NAMEPATYEAR = r'tickets_\d{4}_(.*)\.xlsx'
 
 
 def trace(level, template, *args):
@@ -76,6 +77,7 @@ def one_sheet(ws):
         cell.alignment = Alignment(textRotation=90, horizontal='center')
 
     ws.column_dimensions['A'].width = 12
+    ws.column_dimensions[get_column_letter(datetot)].width = 10
     for cell in ws['A']:
         cell.style = DATE_STYLE
         cell.alignment = CENTER
@@ -125,6 +127,8 @@ def main():
             print(f'Unknown file "{f}" skipped. Not ending in .xlsx.')
             continue
         mat = re.match(NAMEPAT, f)
+        if not mat:  # Try year pattern
+            mat = re.match(NAMEPATYEAR, f)
         if not mat:
             print(f'Unknown file "{f}" skipped. Failed pattern match.')
             continue
