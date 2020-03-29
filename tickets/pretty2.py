@@ -134,8 +134,9 @@ def main():
             continue
         tabname = mat.group(1)
         if tabname == 'merged':  # in case we re-run the script
-            trace(2, 'skipping: {}', f)
+            trace(1, 'skipping: {}', f)
             continue
+        trace(1, 'reading: {}', f)
         wbpath = os.path.join(_args.indir, f)
         oldworkbook = load_workbook(wbpath)
         ws = copy_sheet(oldworkbook, workbook, tabname)
@@ -163,8 +164,7 @@ def getargs():
 
 
 if __name__ == '__main__':
-    if sys.version_info.major < 3 or sys.version_info.minor < 6:
-        raise ImportError('requires Python 3.6')
+    assert sys.version_info >= (3, 6)
     _args = getargs()
     if _args.verbose > 1:
         print(f'verbosity: {_args.verbose}')
