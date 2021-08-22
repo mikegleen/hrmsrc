@@ -16,6 +16,7 @@ import sys
 
 BACKGROUND = 'F2F4F6'
 WHITE = 'FFFFFF'
+IMAGE_MODE = 'RGBA'
 
 Img = namedtuple('Img', ['w', 'h', 'name', 'background'])
 
@@ -70,8 +71,9 @@ def pad_height(inimage, target_width, target_height, background):
     trace(2, 'Resizing image to ({}, {})', target_width, unpadded_height)
     resized_image = inimage.resize((target_width, unpadded_height))
     y_origin = int(math.ceil((target_height - unpadded_height) / 2.))
-    target_image = Image.new('RGB', (target_width, target_height),
+    target_image = Image.new(IMAGE_MODE, (target_width, target_height),
                              background)
+    # target_image.paste(resized_image, (0, y_origin), resized_image)
     target_image.paste(resized_image, (0, y_origin))
     return target_image
 
@@ -84,7 +86,7 @@ def pad_width(inimage, target_width, target_height, background):
     :param inimage:
     :param target_width:
     :param target_height:
-    :param background:
+    :param background: 3-tuple of red, blue, green
     :return the resized and padded image
     """
     trace(2, 'Begin pad_width. Target width, height = ({}, {})', target_width,
@@ -95,7 +97,7 @@ def pad_width(inimage, target_width, target_height, background):
     trace(2, "Resizing image to ({}, {})", unpadded_width, target_height)
     resized_image = inimage.resize((unpadded_width, target_height))
     x_origin = int(math.ceil((target_width - unpadded_width) / 2.))
-    target_image = Image.new('RGB', (target_width, target_height),
+    target_image = Image.new(IMAGE_MODE, (target_width, target_height),
                              background)
     target_image.paste(resized_image, (x_origin, 0))
     return target_image
@@ -141,9 +143,9 @@ def onefile(infile, outdir, img_sizes):
 
 def get_imgs(basekey):
     """
-    
-    :param basekey: 
-    :return: The dictionary of wanted keys and their associated Img instances. 
+
+    :param basekey:
+    :return: The dictionary of wanted keys and their associated Img instances.
     """
     # The key could be a full key like "ev-p" or just a preamble like "ev".
     if '-' in basekey:
