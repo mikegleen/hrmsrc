@@ -73,7 +73,6 @@ def pad_height(inimage, target_width, target_height, background):
     y_origin = int(math.ceil((target_height - unpadded_height) / 2.))
     target_image = Image.new(IMAGE_MODE, (target_width, target_height),
                              background)
-    # target_image.paste(resized_image, (0, y_origin), resized_image)
     target_image.paste(resized_image, (0, y_origin))
     return target_image
 
