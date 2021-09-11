@@ -32,8 +32,8 @@ def main(indir, outfilename):
         output.append(pdfpath)
     output.write(outfilename)
 
+
 if __name__ == '__main__':
-    if sys.version_info.major < 3:
-        raise ImportError('requires Python 3')
+    assert sys.version_info >= (3, 8)
     main(sys.argv[1], sys.argv[2])
 

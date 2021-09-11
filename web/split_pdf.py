@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-  needed because of embedded "£"
 """
 Input is a PDF file specified in the first parameter.
-Output is one file in the current directory per page in the input file. The
-name of the output files is <input basename>-page<minor> starting with the zero-th
-page, but numbering the files from 001.
+Output is one file in the specified directory per page in the input file. The
+name of the output files is <input basename>-page<minor> starting with the
+zero-th page, but numbering the files from 001.
 """
 import argparse
 import os.path
+# noinspection PyProtectedMember
 from PyPDF2 import PdfFileWriter, PdfFileReader
 import sys
 

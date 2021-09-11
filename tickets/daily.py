@@ -27,7 +27,10 @@ def getargs():
         ''')
     parser.add_argument('-m', '--month', type=int,
                         choices=list(range(1, 13)), help='''
-    If specified, limit reporting to the given month in the current year.''')
+    If specified, limit reporting to the given month in the current year.
+    If the month specified is greater than the current month, the year is
+    last year. This is only used in January when reporting the December data.
+    ''')
     args = parser.parse_args()
     if args.month:
         today = dt.date.today()
@@ -53,6 +56,7 @@ def main(args):
         m = df.date.dt.month
         y = df.date.dt.year
         df = df[(m == args.month) & (y == args.year)]
+        assert len(df.date) > 0, f'No data in {args.year}-{args.month:02}.'
     g = df.groupby(['date', 'type'])
     gg = g.sum().unstack().fillna('')
     gg['datetot'] = df.groupby('date').sum()['totprice']
@@ -61,8 +65,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    if sys.version_info.major < 3:
-        raise ImportError('requires Python 3')
+    assert sys.version_info >= (3, 8)
     _args = getargs()
     main(_args)
     print('End daily.')

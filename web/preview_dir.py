@@ -4,6 +4,7 @@
 import os.path
 import subprocess
 import sys
+from PIL import Image
 
 targetdir = sys.argv[1]
 
@@ -17,3 +18,4 @@ try:
 except KeyboardInterrupt:
     print('\nExiting.')
     sys.exit(1)
+
